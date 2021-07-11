@@ -19,10 +19,7 @@ void Cannonball::Update(float dt) {
 		updateVelocity(dt);
 	}
 		
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-		if (!m_isAirbourne)
-		m_isAirbourne = true;
-	}
+	
 }
 
 void Cannonball::Init() {
@@ -165,6 +162,17 @@ float Cannonball::calculateDragforce() {
 	FD = 0.5 * Cd * area * rho * pow(lengthOfU, 2);
 
 	return FD;
+}
+
+void Cannonball::shoot()
+{
+	if (!m_isAirbourne)
+		m_isAirbourne = true;
+}
+
+bool Cannonball::getIsAirbourne()
+{
+	return m_isAirbourne;
 }
 
 float Cannonball::getLengthOfVector(sf::Vector2f v) {

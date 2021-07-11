@@ -1,17 +1,19 @@
 #pragma once
 
 #include <sstream>
-#include "Cannonball.h"
+#include "../Cannonball.h"
 #include <iostream>
+#include "State.h"
 
-class Game : public sf::Drawable
-{
+
+class GameState final : public sf::Drawable, public State {
 public:
-	Game();
-	~Game();
+	GameState();
+	~GameState();
 
-	void Update(float dt);
-	bool initialize();
+	void update(float dt) override;
+
+	void processInput(float dt) override;
 
 private:
 	sf::Texture m_BackgroundTexture;

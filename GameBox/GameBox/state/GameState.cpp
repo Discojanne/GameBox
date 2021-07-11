@@ -1,6 +1,6 @@
-#include "Gamestate.h"
+#include "GameState.h"
 
-Game::Game() :m_Cannonball()
+GameState::GameState() : State(), m_Cannonball()
 {
 	m_BackgroundTexture.loadFromFile("../Resources/background2.jpg");
 	m_BackgroundSprite.setTexture(m_BackgroundTexture);
@@ -9,19 +9,23 @@ Game::Game() :m_Cannonball()
 	this->text.setString(stream.str()); //texten i spelet
 	this->font.loadFromFile("../Resources/Arcon-Regular.otf");
 	this->text.setFont(font);
+
+	m_Cannonball.Init();
 }
 
-Game::~Game()
+GameState::~GameState()
 {
 }
 
-void Game::Update(float dt)
+void GameState::update(float dt)
 {
+	//processInput(dt);
+
 	m_Cannonball.Update(dt);
 
 	this->stream.str(""); // Clear
 	this->stream
-		<< "x: " << this->m_Cannonball.getPos().x << std::endl
+		<< "x: " << this->m_Cannonball.getPos().x << std::endl 
 		<< "Vx: " << m_Cannonball.getVelocity().x << std::endl
 		<< "Vy: " << m_Cannonball.getVelocity().y << std::endl
 		<< "Resistans: " << m_Cannonball.calculateDragforce();
@@ -30,14 +34,16 @@ void Game::Update(float dt)
 
 }
 
-bool Game::initialize()
+void GameState::processInput(float dt)
 {
-	m_Cannonball.Init();
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+		if (!m_Cannonball.getIsAirbourne())
+			m_Cannonball.shoot();
+	}
 
-	return true;
 }
 
-void Game::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void GameState::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	// Make sure everything in the game is drawn.
 	target.draw(m_BackgroundSprite, states);

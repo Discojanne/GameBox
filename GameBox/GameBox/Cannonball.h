@@ -32,6 +32,8 @@ public:
 	sf::Vector2f getPos();
 	sf::Vector2f getVelocity();
 	float calculateDragforce();
+	void shoot();
+	bool getIsAirbourne();
 
 private:
 
