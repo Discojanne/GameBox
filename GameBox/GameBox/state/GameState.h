@@ -18,11 +18,13 @@ public:
 
 private:
 	sf::Texture m_FireTextureSheet;
+	sf::Texture m_CharacterTextureSheet;
 
 	sf::Texture m_BackgroundTexture;
 	sf::Sprite m_BackgroundSprite;
 	Cannonball m_Cannonball;
 	AnimatedSprite m_animatedFireSprite;
+	AnimatedSprite m_animatedCharacterSprite;
 
 	sf::Text text;
 	std::ostringstream stream;

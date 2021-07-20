@@ -14,12 +14,15 @@ MainMenuState::MainMenuState(Game* pGame) : State(States::MainMenu, pGame) {
 	m_buttons.push_back(Button("Start Game", pGame->GetFont(), [&]() {printf("MainMenu: \"Start Game\" Button Pressed!\n"); m_game->SetState(States::Game); }));
 	m_buttons.back().setPosition(posX, posY);
 	posY += 50;
+
 	m_buttons.push_back(Button("Settings (not implemented)", pGame->GetFont(), [&]() {printf("MainMenu: \"Settings\" Button Pressed!\n"); }));
 	m_buttons.back().setPosition(posX, posY);
 	posY += 50;
+
 	m_buttons.push_back(Button("About (not implemented)", pGame->GetFont(), [&]() {printf("MainMenu: \"About\" Button Pressed!\n"); }));
 	m_buttons.back().setPosition(posX, posY);
 	posY += 50;
+
 	m_buttons.push_back(Button("Quit", pGame->GetFont(), [&]() {printf("MainMenu: \"Exit\" Button Pressed!\n"); m_game->getWindow()->close(); }));
 	m_buttons.back().setPosition(posX, posY);
 	posY += 50;

@@ -2,10 +2,9 @@
 #include "../Game.h"
 
 
-GameState::GameState(Game* pGame) : State(States::Game, pGame), m_Cannonball(), m_animatedFireSprite(64, 128) {
+GameState::GameState(Game* pGame) : State(States::Game, pGame), m_animatedFireSprite(8, 4), m_animatedCharacterSprite(7, 3) {
 	m_BackgroundTexture.loadFromFile("../Resources/background2.jpg");
 	m_BackgroundSprite.setTexture(m_BackgroundTexture);
-
 
 	this->stream << 0;
 	this->text.setString(stream.str()); //texten i spelet
@@ -14,10 +13,20 @@ GameState::GameState(Game* pGame) : State(States::Game, pGame), m_Cannonball(), 
 	m_Cannonball.Init();
 
 	m_FireTextureSheet.loadFromFile("../Resources/fireSprite.png");
+	m_CharacterTextureSheet.loadFromFile("../Resources/character.png");
+
 	m_animatedFireSprite.setTexture(m_FireTextureSheet);
 	m_animatedFireSprite.setPosition(1380, 370);
 	m_animatedFireSprite.addAnimation(32);
 	m_animatedFireSprite.setScale(2, 2);
+
+	m_animatedCharacterSprite.setTexture(m_CharacterTextureSheet);
+	m_animatedCharacterSprite.setPosition(500, 650);
+	m_animatedCharacterSprite.addAnimation(7);
+
+	m_animatedCharacterSprite.setScale(1, 1);
+	m_animatedCharacterSprite.setAnimationSpeed(16);
+	m_animatedCharacterSprite.setAnimation(0);
 }
 
 GameState::~GameState() {
@@ -27,6 +36,7 @@ void GameState::update(float dt) {
 
 	m_Cannonball.Update(dt);
 	m_animatedFireSprite.update(dt);
+	m_animatedCharacterSprite.update(dt);
 
 	this->stream.str(""); // Clear
 	this->stream
@@ -65,5 +75,6 @@ void GameState::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(m_BackgroundSprite, states);
 	target.draw(m_Cannonball, states);
 	target.draw(m_animatedFireSprite, states);
+	target.draw(m_animatedCharacterSprite, states);
 	target.draw(this->text);
 }

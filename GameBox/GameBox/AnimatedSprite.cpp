@@ -1,8 +1,8 @@
 #include "AnimatedSprite.h"
 
-AnimatedSprite::AnimatedSprite(size_t frameWidth, size_t frameHeight) {
-	m_textureFrameWidth = frameWidth;
-	m_textureFrameHeight = frameHeight;
+AnimatedSprite::AnimatedSprite(size_t nColumns, size_t nRows) {
+	m_nTextureColumns = nColumns;
+	m_nTextureRows = nRows;
 }
 
 AnimatedSprite::~AnimatedSprite() {
@@ -45,8 +45,9 @@ void AnimatedSprite::setAnimation(size_t animationIndex, float time) {
 
 void AnimatedSprite::setTexture(const sf::Texture& texture, bool resetRect) {
 	sf::Vector2u textureSize = texture.getSize();
-	m_nTextureColumns = textureSize.x / m_textureFrameWidth;
-	m_nTextureRows = textureSize.y / m_textureFrameHeight;
+
+	m_textureFrameWidth = textureSize.x / m_nTextureColumns;
+	m_textureFrameHeight = textureSize.y / m_nTextureRows;
 
 	Sprite::setTexture(texture, false);
 }

@@ -9,7 +9,7 @@ struct AnimationDescription {
 
 class AnimatedSprite : public sf::Sprite {
 public:
-	AnimatedSprite(size_t frameWidth, size_t frameHeight);
+	AnimatedSprite(size_t nColumns, size_t nRows);
 	~AnimatedSprite();
 
 	void update(float dt);
@@ -17,6 +17,7 @@ public:
 	void setAnimation(size_t animationIndex, float time = 0);
 	void setTexture(const sf::Texture& texture, bool resetRect = false);
 	void setAnimationSpeed(float speed = 24);
+
 private:
 	void updateSpriteTextureRect();
 
