@@ -4,28 +4,30 @@
 #include "../Cannonball.h"
 #include <iostream>
 #include "State.h"
+
+#include "../AnimatedGameObject.h"
 #include "../TextureHandler.h"
 #include "../gameObjects/gameObject.h"
 
-class GameState final : public sf::Drawable, public State {
+class GameState final : public State {
 public:
-	GameState();
+	GameState(Game* pGame);
 	~GameState();
 
 	void update(float dt) override;
-
 	void processInput(float dt) override;
+
+	virtual void handleWindowEvent(const sf::Event& windowEvent) override;
 
 private:
 
 	std::vector<GameObject*> m_gameObjectList;
 
 	sf::Sprite m_BackgroundSprite;
-	//Cannonball m_Cannonball;
+
 
 	sf::Text text;
 	std::ostringstream stream;
-	sf::Font font;
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

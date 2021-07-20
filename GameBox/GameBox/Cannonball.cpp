@@ -20,8 +20,8 @@ void Cannonball::update(float dt) {
 	if (m_isAirbourne) {
 		updateVelocity(dt);
 	}
-		
-	
+
+
 }
 
 float Cannonball::CalculateStartVelocity() {
@@ -93,7 +93,7 @@ void Cannonball::updateVelocity(float dt) {
 	/*
 	COLLISION
 	*/
-		// Ground
+	// Ground
 	if (getPosition().y > 700.0f - WIDTH_OF_TEXTURE / 2.0f) {
 
 		setPosition(getPosition().x, 700.0f - 8.01f);
@@ -101,7 +101,7 @@ void Cannonball::updateVelocity(float dt) {
 		m_velocity.x = m_velocity.x * 0.9f;
 	}
 
-		// Castle
+	// Castle
 	if (getPosition().x > 1400 - 8 && getPosition().x < 1410 && getPosition().y < 708.0f && getPosition().y > 580.0f) {
 		setPosition(1400 - 8, getPosition().y);
 		m_velocity.x = (m_velocity.x * -1 * krockKoefWall);
@@ -127,9 +127,8 @@ void Cannonball::updateVelocity(float dt) {
 	}
 }
 
-void Cannonball::calculateFriction()
-{
-	m_velocity.x *= grassIronFriction; 
+void Cannonball::calculateFriction() {
+	m_velocity.x *= grassIronFriction;
 }
 
 float Cannonball::calculateDragforce() {
@@ -138,7 +137,7 @@ float Cannonball::calculateDragforce() {
 	float area = PI * pow(ballWidth / 2, 2);
 	float Cd = 0;
 	float FD = 0;
-	
+
 	if (re < 100)
 		Cd = 1.20f;
 	else if (re < 1000)
@@ -157,14 +156,12 @@ float Cannonball::calculateDragforce() {
 	return FD;
 }
 
-void Cannonball::shoot()
-{
+void Cannonball::shoot() {
 	if (!m_isAirbourne)
 		m_isAirbourne = true;
 }
 
-bool Cannonball::getIsAirbourne()
-{
+bool Cannonball::getIsAirbourne() {
 	return m_isAirbourne;
 }
 
