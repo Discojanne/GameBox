@@ -33,11 +33,11 @@
     <ClCompile Include="state\State.cpp">
       <Filter>Header Files\states</Filter>
     </ClCompile>
+    <ClCompile Include="state\MainMenuState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="state\GameState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Cannonball.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,6 +45,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="state\State.h">
+      <Filter>Header Files\states</Filter>
+    </ClInclude>
+    <ClInclude Include="state\GameState.h">
+      <Filter>Header Files\states</Filter>
+    </ClInclude>
+    <ClInclude Include="state\MainMenuState.h">
       <Filter>Header Files\states</Filter>
     </ClInclude>
   </ItemGroup>

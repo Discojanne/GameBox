@@ -6,14 +6,16 @@
 #include "State.h"
 
 
-class GameState final : public sf::Drawable, public State {
+class GameState final : public State {
 public:
-	GameState();
+	GameState(Game* pGame);
 	~GameState();
 
 	void update(float dt) override;
 
 	void processInput(float dt) override;
+
+	virtual void handleWindowEvent(const sf::Event& windowEvent) override;
 
 private:
 	sf::Texture m_BackgroundTexture;
@@ -22,7 +24,6 @@ private:
 
 	sf::Text text;
 	std::ostringstream stream;
-	sf::Font font;
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
