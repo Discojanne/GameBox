@@ -167,6 +167,7 @@
     <ClCompile Include="AnimatedSprite.cpp" />
     <ClCompile Include="Cannonball.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="state\MainMenuState.cpp" />
     <ClCompile Include="state\GameState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="state\State.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="AnimatedSprite.h" />
     <ClInclude Include="Cannonball.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="state\MainMenuState.h" />
     <ClInclude Include="state\GameState.h" />
     <ClInclude Include="state\State.h" />
   </ItemGroup>

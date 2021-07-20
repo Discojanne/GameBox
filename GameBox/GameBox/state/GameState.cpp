@@ -1,14 +1,15 @@
 #include "GameState.h"
+#include "../Game.h"
 
-GameState::GameState() : State(), m_Cannonball(), m_animatedFireSprite(64, 128) {
+
+GameState::GameState(Game* pGame) : State(States::Game, pGame), m_Cannonball(), m_animatedFireSprite(64, 128) {
 	m_BackgroundTexture.loadFromFile("../Resources/background2.jpg");
 	m_BackgroundSprite.setTexture(m_BackgroundTexture);
 
 
 	this->stream << 0;
 	this->text.setString(stream.str()); //texten i spelet
-	this->font.loadFromFile("../Resources/Arcon-Regular.otf");
-	this->text.setFont(font);
+	this->text.setFont(m_game->GetFont());
 
 	m_Cannonball.Init();
 
@@ -23,7 +24,6 @@ GameState::~GameState() {
 }
 
 void GameState::update(float dt) {
-	//processInput(dt);
 
 	m_Cannonball.Update(dt);
 	m_animatedFireSprite.update(dt);
@@ -45,6 +45,19 @@ void GameState::processInput(float dt) {
 			m_Cannonball.shoot();
 	}
 
+}
+
+
+void GameState::handleWindowEvent(const sf::Event& windowEvent) {
+	switch (windowEvent.type) {
+	case sf::Event::EventType::KeyPressed:
+		if (windowEvent.key.code == sf::Keyboard::Escape) {
+			m_game->SetState(States::MainMenu);
+		}
+		break;
+	default:
+		break;
+	}
 }
 
 void GameState::draw(sf::RenderTarget& target, sf::RenderStates states) const {
