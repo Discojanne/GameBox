@@ -2,12 +2,6 @@
 
 Cannonball::Cannonball() {
 
-	m_Texture.loadFromFile("../Resources/player.png");
-	m_Sprite.setTexture(m_Texture);
-	m_Sprite.setTextureRect(sf::IntRect(0, 0, WIDTH_OF_TEXTURE, WIDTH_OF_TEXTURE));
-	m_Sprite.setOrigin(WIDTH_OF_TEXTURE / 2.0f, WIDTH_OF_TEXTURE / 2.0f);
-	m_Sprite.setPosition(WIDTH_OF_TEXTURE / 2.0f, 700.0f - WIDTH_OF_TEXTURE / 2.0f);
-
 }
 
 Cannonball::~Cannonball() {
@@ -22,7 +16,13 @@ void Cannonball::Update(float dt) {
 	
 }
 
-void Cannonball::Init() {
+void Cannonball::Init(const sf::Texture& t) {
+
+	//m_Texture.loadFromFile("../Resources/player.png");
+	m_Sprite.setTexture(t);
+	m_Sprite.setTextureRect(sf::IntRect(0, 0, WIDTH_OF_TEXTURE, WIDTH_OF_TEXTURE));
+	m_Sprite.setOrigin(WIDTH_OF_TEXTURE / 2.0f, WIDTH_OF_TEXTURE / 2.0f);
+	m_Sprite.setPosition(WIDTH_OF_TEXTURE / 2.0f, 700.0f - WIDTH_OF_TEXTURE / 2.0f);
 
 	// Calculate starting velocity for the cannonball from the cannon explotion.
 	float v = CalculateStartVelocity();

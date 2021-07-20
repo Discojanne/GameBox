@@ -1,16 +1,16 @@
 #include "GameState.h"
 
-GameState::GameState() : State(), m_Cannonball()
+GameState::GameState() : State()
 {
-	m_BackgroundTexture.loadFromFile("../Resources/background2.jpg");
-	m_BackgroundSprite.setTexture(m_BackgroundTexture);
+	m_BackgroundSprite.setTexture(TextureHandler::getInstance().getTexture("background2.jpg"));
+	m_Cannonball.Init(TextureHandler::getInstance().getTexture("player.png"));
 
 	this->stream << 0;
 	this->text.setString(stream.str()); //texten i spelet
 	this->font.loadFromFile("../Resources/Arcon-Regular.otf");
 	this->text.setFont(font);
 
-	m_Cannonball.Init();
+	
 }
 
 GameState::~GameState()

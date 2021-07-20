@@ -27,7 +27,7 @@ public:
 	~Cannonball();
 
 	void Update(float dt);
-	void Init();
+	void Init(const sf::Texture& t);
 
 	sf::Vector2f getPos();
 	sf::Vector2f getVelocity();
@@ -47,8 +47,6 @@ private:
 	
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
-	sf::Texture m_Texture;
 	sf::Sprite m_Sprite;	// contains position of Projectile
 
 	sf::Vector2f m_velocity;

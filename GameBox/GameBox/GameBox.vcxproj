@@ -169,12 +169,14 @@
     <ClCompile Include="state\GameState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="state\State.cpp" />
+    <ClCompile Include="TextureHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cannonball.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="state\GameState.h" />
     <ClInclude Include="state\State.h" />
+    <ClInclude Include="TextureHandler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
