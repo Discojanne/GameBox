@@ -36,6 +36,9 @@
     <ClCompile Include="TextureHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gameObjects\gameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="state\GameState.h">
@@ -51,6 +54,9 @@
       <Filter>Header Files\states</Filter>
     </ClInclude>
     <ClInclude Include="TextureHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gameObjects\gameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

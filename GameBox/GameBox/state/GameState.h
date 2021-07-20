@@ -5,6 +5,7 @@
 #include <iostream>
 #include "State.h"
 #include "../TextureHandler.h"
+#include "../gameObjects/gameObject.h"
 
 class GameState final : public sf::Drawable, public State {
 public:
@@ -17,8 +18,10 @@ public:
 
 private:
 
+	std::vector<GameObject*> m_gameObjectList;
+
 	sf::Sprite m_BackgroundSprite;
-	Cannonball m_Cannonball;
+	//Cannonball m_Cannonball;
 
 	sf::Text text;
 	std::ostringstream stream;

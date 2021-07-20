@@ -166,6 +166,7 @@
   <ItemGroup>
     <ClCompile Include="Cannonball.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="gameObjects\gameObject.cpp" />
     <ClCompile Include="state\GameState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="state\State.cpp" />
@@ -174,6 +175,7 @@
   <ItemGroup>
     <ClInclude Include="Cannonball.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="gameObjects\gameObject.h" />
     <ClInclude Include="state\GameState.h" />
     <ClInclude Include="state\State.h" />
     <ClInclude Include="TextureHandler.h" />
