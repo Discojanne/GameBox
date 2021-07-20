@@ -164,6 +164,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedSprite.cpp" />
     <ClCompile Include="Cannonball.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="state\GameState.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="state\State.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatedSprite.h" />
     <ClInclude Include="Cannonball.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="state\GameState.h" />
