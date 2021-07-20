@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML\Graphics.hpp>
+#include "gameObjects/gameObject.h"
 
 #define WIDTH_OF_TEXTURE 16
 #define g 9.82
@@ -21,13 +22,12 @@
 #define gunpowderAmount 300		// in grams 300		9
 #define startAngel      4		// degrees 4		30
 
-class Cannonball : public sf::Drawable {
+class Cannonball : public GameObject {
 public:
-	Cannonball();
+	Cannonball(const sf::Texture& t);
 	~Cannonball();
 
-	void Update(float dt);
-	void Init();
+	void update(float dt);
 
 	sf::Vector2f getPos();
 	sf::Vector2f getVelocity();
@@ -46,10 +46,8 @@ private:
 
 	
 
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
-	sf::Texture m_Texture;
-	sf::Sprite m_Sprite;	// contains position of Projectile
+	//void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	//sf::Sprite m_Sprite;	// contains position of Projectile
 
 	sf::Vector2f m_velocity;
 	bool m_isAirbourne = false;

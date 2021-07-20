@@ -1,32 +1,25 @@
 #include "Cannonball.h"
 
-Cannonball::Cannonball() {
+Cannonball::Cannonball(const sf::Texture& t) {
+	//m_Texture.loadFromFile("../Resources/player.png");
+	setTexture(t);
+	setTextureRect(sf::IntRect(0, 0, WIDTH_OF_TEXTURE, WIDTH_OF_TEXTURE));
+	setOrigin(WIDTH_OF_TEXTURE / 2.0f, WIDTH_OF_TEXTURE / 2.0f);
+	setPosition(WIDTH_OF_TEXTURE / 2.0f, 700.0f - WIDTH_OF_TEXTURE / 2.0f);
 
-	m_Texture.loadFromFile("../Resources/player.png");
-	m_Sprite.setTexture(m_Texture);
-	m_Sprite.setTextureRect(sf::IntRect(0, 0, WIDTH_OF_TEXTURE, WIDTH_OF_TEXTURE));
-	m_Sprite.setOrigin(WIDTH_OF_TEXTURE / 2.0f, WIDTH_OF_TEXTURE / 2.0f);
-	m_Sprite.setPosition(WIDTH_OF_TEXTURE / 2.0f, 700.0f - WIDTH_OF_TEXTURE / 2.0f);
-
+	// Calculate starting velocity for the cannonball from the cannon explotion.
+	float v = CalculateStartVelocity();
+	m_velocity = sf::Vector2f(cosf(startAngel * PI / 180) * v, sinf(startAngel * PI / 180) * v);
 }
 
 Cannonball::~Cannonball() {
 }
 
-void Cannonball::Update(float dt) {
+void Cannonball::update(float dt) {
 
 	if (m_isAirbourne) {
 		updateVelocity(dt);
 	}
-		
-	
-}
-
-void Cannonball::Init() {
-
-	// Calculate starting velocity for the cannonball from the cannon explotion.
-	float v = CalculateStartVelocity();
-	m_velocity = sf::Vector2f(cosf(startAngel * PI / 180) * v, sinf(startAngel * PI / 180) * v);
 
 
 }
@@ -95,26 +88,26 @@ void Cannonball::updateVelocity(float dt) {
 
 	// move 
 	float pixelInMeters = pixelSize;
-	m_Sprite.move(x * pixelInMeters, -y * pixelInMeters);
+	move(x * pixelInMeters, -y * pixelInMeters);
 
 	/*
 	COLLISION
 	*/
-		// Ground
-	if (m_Sprite.getPosition().y > 700.0f - WIDTH_OF_TEXTURE / 2.0f) {
+	// Ground
+	if (getPosition().y > 700.0f - WIDTH_OF_TEXTURE / 2.0f) {
 
-		m_Sprite.setPosition(m_Sprite.getPosition().x, 700.0f - 8.01f);
+		setPosition(getPosition().x, 700.0f - 8.01f);
 		m_velocity.y = m_velocity.y * -1 * krockKoefGround;
 		m_velocity.x = m_velocity.x * 0.9f;
 	}
 
-		// Castle
-	if (m_Sprite.getPosition().x > 1400 - 8 && m_Sprite.getPosition().x < 1410 && m_Sprite.getPosition().y < 708.0f && m_Sprite.getPosition().y > 580.0f) {
-		m_Sprite.setPosition(1400 - 8, m_Sprite.getPosition().y);
+	// Castle
+	if (getPosition().x > 1400 - 8 && getPosition().x < 1410 && getPosition().y < 708.0f && getPosition().y > 580.0f) {
+		setPosition(1400 - 8, getPosition().y);
 		m_velocity.x = (m_velocity.x * -1 * krockKoefWall);
 	}
 
-	if (m_Sprite.getPosition().x > 1400 && m_Sprite.getPosition().x < 1552.0f && m_Sprite.getPosition().y > 580.0f) {
+	if (getPosition().x > 1400 && getPosition().x < 1552.0f && getPosition().y > 580.0f) {
 		m_velocity.x = 0.0f;
 		m_velocity.y = 0.0001f;
 	}
@@ -122,7 +115,7 @@ void Cannonball::updateVelocity(float dt) {
 	/*
 	Stop
 	*/
-	if (abs(m_velocity.y) < 0.001f && abs(m_velocity.x) < 0.001f && m_Sprite.getPosition().y > 690.0f) {
+	if (abs(m_velocity.y) < 0.001f && abs(m_velocity.x) < 0.001f && getPosition().y > 690.0f) {
 		m_velocity.x = 0.0f;
 		m_velocity.y = 0.0f;
 		m_isAirbourne = false;
@@ -134,9 +127,8 @@ void Cannonball::updateVelocity(float dt) {
 	}
 }
 
-void Cannonball::calculateFriction()
-{
-	m_velocity.x *= grassIronFriction; 
+void Cannonball::calculateFriction() {
+	m_velocity.x *= grassIronFriction;
 }
 
 float Cannonball::calculateDragforce() {
@@ -145,7 +137,7 @@ float Cannonball::calculateDragforce() {
 	float area = PI * pow(ballWidth / 2, 2);
 	float Cd = 0;
 	float FD = 0;
-	
+
 	if (re < 100)
 		Cd = 1.20f;
 	else if (re < 1000)
@@ -164,14 +156,12 @@ float Cannonball::calculateDragforce() {
 	return FD;
 }
 
-void Cannonball::shoot()
-{
+void Cannonball::shoot() {
 	if (!m_isAirbourne)
 		m_isAirbourne = true;
 }
 
-bool Cannonball::getIsAirbourne()
-{
+bool Cannonball::getIsAirbourne() {
 	return m_isAirbourne;
 }
 
@@ -188,13 +178,13 @@ sf::Vector2f Cannonball::getUnitVector(sf::Vector2f v) {
 }
 
 sf::Vector2f Cannonball::getPos() {
-	return m_Sprite.getPosition();
+	return getPosition();
 }
 
 sf::Vector2f Cannonball::getVelocity() {
 	return m_velocity;
 }
 
-void Cannonball::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-	target.draw(m_Sprite, states);
-}
+//void Cannonball::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+//	target.draw(m_Sprite, states);
+//}

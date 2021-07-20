@@ -164,21 +164,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AnimatedSprite.cpp" />
+    <ClCompile Include="AnimatedGameObject.cpp" />
     <ClCompile Include="Cannonball.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="state\MainMenuState.cpp" />
+    <ClCompile Include="gameObjects\gameObject.cpp" />
     <ClCompile Include="state\GameState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="state\MainMenuState.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="state\State.cpp" />
+    <ClCompile Include="TextureHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimatedSprite.h" />
+    <ClInclude Include="AnimatedGameObject.h" />
     <ClInclude Include="Cannonball.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="state\MainMenuState.h" />
+    <ClInclude Include="gameObjects\gameObject.h" />
     <ClInclude Include="state\GameState.h" />
+    <ClInclude Include="state\MainMenuState.h" />
     <ClInclude Include="state\State.h" />
+    <ClInclude Include="TextureHandler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

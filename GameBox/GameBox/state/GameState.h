@@ -4,7 +4,10 @@
 #include "../Cannonball.h"
 #include <iostream>
 #include "State.h"
-#include "../AnimatedSprite.h"
+
+#include "../AnimatedGameObject.h"
+#include "../TextureHandler.h"
+#include "../gameObjects/gameObject.h"
 
 class GameState final : public State {
 public:
@@ -17,14 +20,11 @@ public:
 	virtual void handleWindowEvent(const sf::Event& windowEvent) override;
 
 private:
-	sf::Texture m_FireTextureSheet;
-	sf::Texture m_CharacterTextureSheet;
 
-	sf::Texture m_BackgroundTexture;
+	std::vector<GameObject*> m_gameObjectList;
+
 	sf::Sprite m_BackgroundSprite;
-	Cannonball m_Cannonball;
-	AnimatedSprite m_animatedFireSprite;
-	AnimatedSprite m_animatedCharacterSprite;
+
 
 	sf::Text text;
 	std::ostringstream stream;
