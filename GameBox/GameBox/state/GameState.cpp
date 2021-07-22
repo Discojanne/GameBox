@@ -27,7 +27,6 @@ GameState::GameState(Game* pGame) : State(States::Game, pGame) {
 	m_animatedCharacterSprite->setAnimationSpeed(16);
 	m_animatedCharacterSprite->setAnimation(0);
 	m_gameObjectList.push_back(m_animatedCharacterSprite);
-
 }
 
 GameState::~GameState() {
