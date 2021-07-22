@@ -5,7 +5,7 @@
 #include <iostream>
 #include "State.h"
 
-#include "../AnimatedGameObject.h"
+//#include "../AnimatedGameObject.h"
 #include "../TextureHandler.h"
 #include "../gameObjects/gameObject.h"
 
