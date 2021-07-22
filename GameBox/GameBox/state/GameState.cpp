@@ -1,7 +1,83 @@
 #include "GameState.h"
 #include "../Game.h"
+#include "SFML/Graphics.hpp"
+
+struct TargetingComponent {
+	entityx::Entity target;
+	float speed;
+};
+
+class TargetingSystem : public entityx::System<TargetingSystem> {
+public:
+	explicit TargetingSystem(Game* pGame) : m_pGame(pGame) {
+	};
+
+	~TargetingSystem() {
+	};
+
+	void update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt) override {
+		es.each<TargetingComponent, sf::Sprite>([&](entityx::Entity entity, const TargetingComponent& target, sf::Sprite& sprite) {
+
+			if (target.target.valid()) {
+				if (target.target.has_component<sf::Sprite>()) {
+					entityx::ComponentHandle<sf::Sprite> spriteCompHND;
+					es.unpack<sf::Sprite>(target.target.id(), spriteCompHND);
+					spriteCompHND.get()->getPosition();
+
+					sf::Vector2f dir = spriteCompHND.get()->getPosition() - sprite.getPosition();
+					dir /= std::sqrt(dir.x * dir.x + dir.y * dir.y);
+					sprite.setPosition(sprite.getPosition() + dir * target.speed * (float)dt);
+				}
+			}
+			});
+	}
+private:
+	Game* m_pGame;
+};
+
+class SpriteRenderSystem : public entityx::System<SpriteRenderSystem> {
+public:
+	explicit SpriteRenderSystem(Game* pGame) : m_pGame(pGame) {
+	};
+
+	~SpriteRenderSystem() {
+	};
+
+	void update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt) override {
+		es.each<sf::Sprite>([&](entityx::Entity entity, const sf::Sprite& sprite) {
+			m_pGame->getWindow()->draw(sprite);
+			});
+	}
+private:
+	Game* m_pGame;
+};
 
 GameState::GameState(Game* pGame) : State(States::Game, pGame) {
+
+	//======================================
+	//Setup EntityX Systems
+	systems.add<TargetingSystem>(pGame);
+	systems.add<SpriteRenderSystem>(pGame);
+	systems.configure();
+	//======================================
+
+	{
+		m_playerEntity = entities.create();
+		auto comp = m_playerEntity.assign<sf::Sprite>().get();
+		comp->setPosition(100, 100);
+		comp->setTexture(TextureHandler::getInstance().getTexture("../Resources/default.png"));
+
+		for (size_t i = 0; i < 10; i++) {
+			entityx::Entity ent2 = entities.create();
+			auto spriteComp = ent2.assign<sf::Sprite>().get();
+			spriteComp->setPosition(i * 100, i * 100 % 400);
+			spriteComp->setTexture(TextureHandler::getInstance().getTexture("default.png"));
+
+			auto targetComp = ent2.assign<TargetingComponent>().get();
+			targetComp->target = m_playerEntity;
+			targetComp->speed = 35 + i * 5;
+		}
+	}
 
 	m_BackgroundSprite.setTexture(TextureHandler::getInstance().getTexture("background2.jpg"));
 	m_gameObjectList.push_back(new Cannonball(TextureHandler::getInstance().getTexture("player.png")));
@@ -9,7 +85,6 @@ GameState::GameState(Game* pGame) : State(States::Game, pGame) {
 	this->stream << 0;
 	this->text.setString(stream.str()); //texten i spelet
 	this->text.setFont(m_game->GetFont());
-
 
 	//Setup the Animated Fire
 	AnimatedGameObject* m_animatedFireSprite = new AnimatedGameObject(8, 4);
@@ -41,6 +116,17 @@ void GameState::update(float dt) {
 		i->update(dt);
 	}
 
+	systems.update<TargetingSystem>(dt);
+
+	sf::RenderWindow* window = m_game->getWindow();
+	window->draw(m_BackgroundSprite);
+	systems.update<SpriteRenderSystem>(dt);
+	for (auto& i : m_gameObjectList) {
+		window->draw(*i);
+	}
+
+	window->draw(this->text);
+
 	this->stream.str("test"); // Clear
 	this->text.setString(stream.str());	/* Update text with new stream */
 }
@@ -49,6 +135,19 @@ void GameState::processInput(float dt) {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		if (!static_cast<Cannonball*>(m_gameObjectList[0])->getIsAirbourne())
 			static_cast<Cannonball*>(m_gameObjectList[0])->shoot();
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		m_playerEntity.component<sf::Sprite>().get()->move(0, -dt * 100);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+		m_playerEntity.component<sf::Sprite>().get()->move(0, dt * 100);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		m_playerEntity.component<sf::Sprite>().get()->move(-dt * 100, 0);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		m_playerEntity.component<sf::Sprite>().get()->move(dt * 100, 0);
 	}
 }
 
@@ -63,15 +162,4 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 	default:
 		break;
 	}
-}
-
-void GameState::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-	// Make sure everything in the game is drawn.
-	target.draw(m_BackgroundSprite, states);
-
-	for (auto& i : m_gameObjectList) {
-		target.draw(*i, states);
-	}
-
-	target.draw(this->text);
 }

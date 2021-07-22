@@ -16,7 +16,7 @@ namespace States {
 }
 
 // Base class for all states
-class State : public sf::Drawable, public entityx::EntityX {
+class State :public entityx::EntityX {
 
 public:
 	State(States::ID id, Game* pGame);

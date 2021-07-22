@@ -25,9 +25,8 @@ private:
 
 	sf::Sprite m_BackgroundSprite;
 
+	entityx::Entity m_playerEntity;
 
 	sf::Text text;
 	std::ostringstream stream;
-
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
