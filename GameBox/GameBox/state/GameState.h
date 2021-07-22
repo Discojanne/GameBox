@@ -5,7 +5,7 @@
 #include <iostream>
 #include "State.h"
 
-#include "../AnimatedGameObject.h"
+//#include "../AnimatedGameObject.h"
 #include "../TextureHandler.h"
 #include "../gameObjects/gameObject.h"
 
@@ -25,9 +25,8 @@ private:
 
 	sf::Sprite m_BackgroundSprite;
 
+	entityx::Entity m_playerEntity;
 
 	sf::Text text;
 	std::ostringstream stream;
-
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
