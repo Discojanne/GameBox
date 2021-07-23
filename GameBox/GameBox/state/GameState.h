@@ -21,10 +21,12 @@ public:
 
 private:
 
+	void initializeSystems();
+	void initializeAnimations();
+	void initializeEntities();
+
 	std::vector<GameObject*> m_gameObjectList;
-
 	sf::Sprite m_BackgroundSprite;
-
 	entityx::Entity m_playerEntity;
 
 	sf::Text text;
