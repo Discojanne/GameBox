@@ -29,6 +29,8 @@ private:
 	sf::Sprite m_BackgroundSprite;
 	entityx::Entity m_playerEntity;
 
+	int a = 2;
+
 	sf::Text text;
 	std::ostringstream stream;
 };
