@@ -1,4 +1,3 @@
-//Dont Mind this comment - Testing Branch Protection Rule
 #include "GameState.h"
 #include "../Game.h"
 #include "SFML/Graphics.hpp"
