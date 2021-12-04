@@ -25,6 +25,8 @@ private:
 	void initializeAnimations();
 	void initializeEntities();
 
+	Game* m_game;
+
 	std::vector<GameObject*> m_gameObjectList;
 	sf::Sprite m_BackgroundSprite;
 	entityx::Entity m_playerEntity;
