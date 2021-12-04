@@ -12,36 +12,25 @@ GameState::GameState(Game* pGame) : State(States::Game, pGame), m_game(pGame) {
 	initializeAnimations();
 	initializeEntities();
 
-	m_BackgroundSprite.setTexture(TextureHandler::getInstance().getTexture("background2.jpg"));
-	m_gameObjectList.push_back(new Cannonball(TextureHandler::getInstance().getTexture("player.png")));
-
 	this->stream << 0;
 	this->text.setString(stream.str()); //texten i spelet
 	this->text.setFont(m_game->GetFont());
 }
 
 GameState::~GameState() {
-	for (auto& i : m_gameObjectList) {
-		delete i;
-	}
+	
 }
 
 void GameState::update(float dt) {
 
-	for (auto& i : m_gameObjectList) {
-		i->update(dt);
-	}
-
 	systems.update<AnimationSystem>(dt);
 	systems.update<TargetingSystem>(dt);
 	systems.update<BallSystem>(dt);
+	systems.update<AISystem>(dt);
 
 	sf::RenderWindow* window = m_game->getWindow();
-	window->draw(m_BackgroundSprite);
 	systems.update<SpriteRenderSystem>(dt);
-	for (auto& i : m_gameObjectList) {
-		window->draw(*i);
-	}
+	
 
 	window->draw(this->text);
 
@@ -50,10 +39,6 @@ void GameState::update(float dt) {
 }
 
 void GameState::processInput(float dt) {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-		if (!static_cast<Cannonball*>(m_gameObjectList[0])->getIsAirbourne())
-			static_cast<Cannonball*>(m_gameObjectList[0])->shoot();
-	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 		auto playerSprite = m_playerEntity.component<sf::Sprite>().get();
@@ -71,12 +56,6 @@ void GameState::processInput(float dt) {
 			playerSprite->setPosition(playerSprite->getPosition().x, m_game->getWindow()->getSize().y - playerSprite->getGlobalBounds().height);
 		}
 	}
-	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		m_playerEntity.component<sf::Sprite>().get()->move(-dt * 250, 0);
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		m_playerEntity.component<sf::Sprite>().get()->move(dt * 250, 0);
-	}*/
 }
 
 
@@ -118,6 +97,8 @@ void GameState::initializeSystems() {
 	//Setup EntityX Systems
 	systems.add<TargetingSystem>();
 	systems.add<BallSystem>(m_game->getWindow());
+	systems.add<AISystem>(m_game->getWindow());
+
 	auto animationSystem = systems.add<AnimationSystem>();
 	systems.add<SpriteRenderSystem>(m_game);
 	systems.configure();
@@ -152,8 +133,13 @@ void GameState::initializeEntities() {
 		comp->setPosition(25, m_game->getWindow()->getSize().y / 2.0f - comp->getGlobalBounds().height / 2.0f);
 		comp->setTexture(TextureHandler::getInstance().getTexture("../Resources/paddel.png"));
 		m_playerEntity.assign<PaddelComponent>();
-
+		
 		{
+			//Create fire entity to render the ball over the fire
+			//Continuing the fire init further down
+			entityx::Entity ent4 = entities.create();
+			auto spriteComp3 = ent4.assign<sf::Sprite>().get();
+
 			//Create an animated fire entity that follows the player
 			entityx::Entity ent2 = entities.create();
 			auto spriteComp = ent2.assign<sf::Sprite>().get();
@@ -164,7 +150,7 @@ void GameState::initializeEntities() {
 
 			ent2.assign<BallComponent>();
 
-			//Create 10 entities that follow the player at different speeds
+			//Create 10 entities that follow the ball at different speeds
 			for (size_t i = 0; i < 10; i++) {
 				entityx::Entity ent3 = entities.create();
 				auto spriteComp2 = ent3.assign<sf::Sprite>().get();
@@ -175,17 +161,28 @@ void GameState::initializeEntities() {
 
 				auto targetComp = ent3.assign<TargetingComponent>().get();
 				targetComp->target = ent2;
-				targetComp->speed = 35 + i * 5;
+				targetComp->speed = 35 + i * 18;
 			}
-		}
-		{
-			//Create an animated fire entity that does not follow the player
-			entityx::Entity ent2 = entities.create();
-			auto spriteComp = ent2.assign<sf::Sprite>().get();
-			spriteComp->setPosition(1380, 370);
-			spriteComp->setTexture(TextureHandler::getInstance().getTexture("../Resources/fireSprite.png"));
-			spriteComp->setScale(2, 2);
-			ent2.assign<AnimationComponent>();
+
+			//Create an animated fire entity that does  follow the ball
+			spriteComp3->setPosition(1380, 370);
+			spriteComp3->setTexture(TextureHandler::getInstance().getTexture("../Resources/fireSprite.png"));
+			spriteComp3->setScale(0.5f, 0.5f);
+			spriteComp3->setOrigin(18,86);
+			ent4.assign<AnimationComponent>();
+
+			auto targetComp = ent4.assign<TargetingComponent>().get();
+			targetComp->target = ent2;
+			targetComp->speed = 10000.0f;
+
+			//Create Opponent
+			entityx::Entity opponentEntity = entities.create();//Store the player entity in m_playerEntity for future use
+			auto opponentEntitySprite = opponentEntity.assign<sf::Sprite>().get();
+			opponentEntitySprite->setTexture(TextureHandler::getInstance().getTexture("../Resources/paddel.png"));
+			opponentEntitySprite->setPosition(m_game->getWindow()->getSize().x - 25 - comp->getGlobalBounds().width, m_game->getWindow()->getSize().y / 2.0f - comp->getGlobalBounds().height / 2.0f);
+			opponentEntity.assign<PaddelComponent>();
+			auto aicomp = opponentEntity.assign<AIComponent>();
+			aicomp->ball = ent2;
 		}
 
 		{

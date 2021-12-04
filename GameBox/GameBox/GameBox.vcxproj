@@ -165,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cannonball.cpp" />
+    <ClCompile Include="ECS\Systems\AISystem.cpp" />
     <ClCompile Include="ECS\Systems\BallSystem.cpp" />
     <ClCompile Include="ECS\Systems\CollisionSystem.cpp" />
     <ClCompile Include="ECS\Systems\FollowTargetSystem.cpp" />
@@ -186,6 +187,7 @@
   <ItemGroup>
     <ClInclude Include="Cannonball.h" />
     <ClInclude Include="ECS\Systems.h" />
+    <ClInclude Include="ECS\Systems\AISystem.h" />
     <ClInclude Include="ECS\Systems\BallSystem.h" />
     <ClInclude Include="ECS\Systems\CollisionSystem.h" />
     <ClInclude Include="ECS\Systems\FollowTargetSystem.h" />
