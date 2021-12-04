@@ -74,6 +74,28 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 		if (windowEvent.key.code == sf::Keyboard::Escape) {
 			m_game->SetState(States::MainMenu);
 		}
+	case sf::Event::MouseButtonPressed:
+
+
+		// Mouse buttons
+		switch (windowEvent.key.code)
+		{
+		case sf::Mouse::Left:
+
+			if (windowEvent.type == 9)
+			{
+				//std::cout << "mouse pos: " << windowEvent.mouseButton.x << " " << windowEvent.mouseButton.y << std::endl;
+				m_playerEntity.component<sf::Sprite>().get()->setPosition(windowEvent.mouseButton.x, windowEvent.mouseButton.y);
+			}
+
+			break;
+		default:
+			break;
+		}
+
+		break;
+		// End of mouse buttons
+
 		break;
 	default:
 		break;
@@ -115,7 +137,9 @@ void GameState::initializeEntities() {
 		m_playerEntity = entities.create();//Store the player entity in m_playerEntity for future use
 		auto comp = m_playerEntity.assign<sf::Sprite>().get();
 		comp->setPosition(100, 100);
-		comp->setTexture(TextureHandler::getInstance().getTexture("../Resources/default.png"));
+		comp->setTexture(TextureHandler::getInstance().getTexture("../Resources/character.png"));
+		auto animationComp = m_playerEntity.assign<AnimationComponent>();
+		animationComp->m_animationSpeed = 20;
 
 		//Create 10 entities that follow the player at different speeds
 		for (size_t i = 0; i < 10; i++) {
