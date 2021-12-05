@@ -4,3 +4,4 @@
 #include "Systems/SpriteRenderSystem.h"
 #include "Systems/BallSystem.h"
 #include "Systems/AISystem.h"
+#include "Systems/TextSystem.h"

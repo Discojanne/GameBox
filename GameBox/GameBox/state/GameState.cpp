@@ -7,14 +7,10 @@
 
 GameState::GameState(Game* pGame) : State(States::Game, pGame), m_game(pGame) {
 
-
 	initializeSystems();
 	initializeAnimations();
 	initializeEntities();
 
-	this->stream << 0;
-	this->text.setString(stream.str()); //texten i spelet
-	this->text.setFont(m_game->GetFont());
 }
 
 GameState::~GameState() {
@@ -28,14 +24,9 @@ void GameState::update(float dt) {
 	systems.update<BallSystem>(dt);
 	systems.update<AISystem>(dt);
 
-	sf::RenderWindow* window = m_game->getWindow();
 	systems.update<SpriteRenderSystem>(dt);
+	systems.update<TextSystem>(dt);
 	
-
-	window->draw(this->text);
-
-	this->stream.str("test"); // Clear
-	this->text.setString(stream.str());	/* Update text with new stream */
 }
 
 void GameState::processInput(float dt) {
@@ -56,6 +47,19 @@ void GameState::processInput(float dt) {
 			playerSprite->setPosition(playerSprite->getPosition().x, m_game->getWindow()->getSize().y - playerSprite->getGlobalBounds().height);
 		}
 	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		//Create an animated fire entity that follows the player
+		entityx::Entity ent2 = entities.create();
+		auto spriteComp = ent2.assign<sf::Sprite>().get();
+		spriteComp->setPosition(500, 500);
+		spriteComp->setTexture(TextureHandler::getInstance().getTexture("../Resources/player.png"));
+		//spriteComp->setOrigin(spriteComp->getLocalBounds().width / 2.0f, spriteComp->getLocalBounds().height / 2.0f);
+		spriteComp->setOrigin(0, 0);
+
+		ent2.assign<BallComponent>();
+	}
+
 }
 
 
@@ -98,6 +102,7 @@ void GameState::initializeSystems() {
 	systems.add<TargetingSystem>();
 	systems.add<BallSystem>(m_game->getWindow());
 	systems.add<AISystem>(m_game->getWindow());
+	systems.add<TextSystem>(m_game->getWindow());
 
 	auto animationSystem = systems.add<AnimationSystem>();
 	systems.add<SpriteRenderSystem>(m_game);
@@ -133,14 +138,14 @@ void GameState::initializeEntities() {
 		comp->setPosition(25, m_game->getWindow()->getSize().y / 2.0f - comp->getGlobalBounds().height / 2.0f);
 		comp->setTexture(TextureHandler::getInstance().getTexture("../Resources/paddel.png"));
 		m_playerEntity.assign<PaddelComponent>();
-		
+
 		{
 			//Create fire entity to render the ball over the fire
 			//Continuing the fire init further down
 			entityx::Entity ent4 = entities.create();
 			auto spriteComp3 = ent4.assign<sf::Sprite>().get();
 
-			//Create an animated fire entity that follows the player
+			//Create a ball entity that follows the player
 			entityx::Entity ent2 = entities.create();
 			auto spriteComp = ent2.assign<sf::Sprite>().get();
 			spriteComp->setPosition(500, 500);
@@ -184,6 +189,12 @@ void GameState::initializeEntities() {
 			auto aicomp = opponentEntity.assign<AIComponent>();
 			aicomp->ball = ent2;
 		}
+
+		entityx::Entity testtextEntity = entities.create();
+		auto textcomp = m_playerEntity.assign<TextComponent>().get();
+		textcomp->text.setFont(m_game->GetFont());
+		textcomp->text.setString("Score: f ewagreahtrea hter<ajrejadf<a jezrtgr");
+		textcomp->text.setPosition(m_game->getWindow()->getSize().x / 2.0f - textcomp->text.getGlobalBounds().width / 2, 0.0f);
 
 		{
 			//Create the animated character entity

@@ -171,6 +171,7 @@
     <ClCompile Include="ECS\Systems\FollowTargetSystem.cpp" />
     <ClCompile Include="ECS\Systems\SpriteAnimationSystem.cpp" />
     <ClCompile Include="ECS\Systems\SpriteRenderSystem.cpp" />
+    <ClCompile Include="ECS\Systems\TextSystem.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="gameObjects\gameObject.cpp" />
     <ClCompile Include="state\GameState.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="ECS\Systems\FollowTargetSystem.h" />
     <ClInclude Include="ECS\Systems\SpriteAnimationSystem.h" />
     <ClInclude Include="ECS\Systems\SpriteRenderSystem.h" />
+    <ClInclude Include="ECS\Systems\TextSystem.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="gameObjects\gameObject.h" />
     <ClInclude Include="state\GameState.h" />

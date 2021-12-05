@@ -26,6 +26,4 @@ private:
 
 	entityx::Entity m_playerEntity;
 
-	sf::Text text;
-	std::ostringstream stream;
 };

@@ -19,7 +19,7 @@ void BallSystem::update(entityx::EntityManager& es, entityx::EventManager& event
 		float y_offset = sprite.getGlobalBounds().height;
 
 
-		es.each<PaddelComponent, sf::Sprite>([&](entityx::Entity entity, const PaddelComponent& paddelcomponent, const sf::Sprite& spritePaddel) {
+		es.each<PaddelComponent, sf::Sprite>([&](entityx::Entity entity, const PaddelComponent& paddelcomponent, sf::Sprite& spritePaddel) {
 			if (sprite.getGlobalBounds().intersects(spritePaddel.getGlobalBounds()))
 			{
 				float dy = (sprite.getPosition().y + sprite.getGlobalBounds().height / 2.0f) - (spritePaddel.getPosition().y + spritePaddel.getGlobalBounds().height / 2.0f);
@@ -39,7 +39,6 @@ void BallSystem::update(entityx::EntityManager& es, entityx::EventManager& event
 					ballcomponent.dir.x = ballcomponent.dir.x / length;
 					ballcomponent.dir.y = ballcomponent.dir.y / length;
 				}
-
 			}
 			});
 
