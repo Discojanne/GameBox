@@ -15,6 +15,8 @@ struct BallComponent
 
 struct PaddelComponent
 {
+	int playerID;
+	int score = 0;
 };
 
 class BallSystem : public entityx::System<BallSystem>
@@ -23,6 +25,7 @@ public:
 	explicit BallSystem(sf::RenderWindow* window);
 	~BallSystem();
 	void update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt) override;
+
 private:
 	sf::RenderWindow* m_window;
 };

@@ -1,5 +1,6 @@
 #include "BallSystem.h"
 #include "SFML/Graphics/RenderWindow.hpp"
+#include "../../events/ScoreEvent.h"
 
 BallSystem::BallSystem(sf::RenderWindow* window) : m_window(window)
 {
@@ -17,6 +18,8 @@ void BallSystem::update(entityx::EntityManager& es, entityx::EventManager& event
 		sf::Vector2f pos = sprite.getPosition();
 		float x_offset = sprite.getGlobalBounds().width;
 		float y_offset = sprite.getGlobalBounds().height;
+
+
 
 
 		es.each<PaddelComponent, sf::Sprite>([&](entityx::Entity entity, const PaddelComponent& paddelcomponent, sf::Sprite& spritePaddel) {
@@ -43,18 +46,46 @@ void BallSystem::update(entityx::EntityManager& es, entityx::EventManager& event
 			});
 
 
-		// Horizontal
+		
+		// Left side
 		if (pos.x < 0.0f && ballcomponent.dir.x < 0.0f)
 		{
-			ballcomponent.dir.x *= -1;
-			sprite.setPosition(0, pos.y);
+			//ballcomponent.dir.x *= -1;
+			//sprite.setPosition(0, pos.y);
+			
+			es.each<PaddelComponent, sf::Sprite>([&](entityx::Entity entity, PaddelComponent& paddelcomponent, sf::Sprite& spritePaddel) {
+				if (paddelcomponent.playerID == 1)
+				{
+					ScoreEvent data;
+					data.playerID = 1;
+					data.score = ++paddelcomponent.score;
+					events.emit<ScoreEvent>(data);
+				}
+				});
+			ballcomponent.dir = sf::Vector2f(1.0f, 0.0f);
+			sprite.setPosition(m_window->getSize().x / 2.0f, m_window->getSize().y / 2.0f);
+
 		}
+		// Right side
 		else if (pos.x > m_window->getSize().x - x_offset && ballcomponent.dir.x > 0.0f)
 		{
-			ballcomponent.dir.x *= -1;
-			sprite.setPosition(m_window->getSize().x - x_offset, pos.y);
+			//ballcomponent.dir.x *= -1;
+			//sprite.setPosition(m_window->getSize().x - x_offset, pos.y);
+			es.each<PaddelComponent, sf::Sprite>([&](entityx::Entity entity, PaddelComponent& paddelcomponent, sf::Sprite& spritePaddel) {
+				if (paddelcomponent.playerID == 0)
+				{
+					ScoreEvent data;
+					data.playerID = 0;
+					data.score = ++paddelcomponent.score;
+					events.emit<ScoreEvent>(data);
+				}
+				});
+			ballcomponent.dir = sf::Vector2f(-1.0f, 0.0f);
+			sprite.setPosition(m_window->getSize().x / 2.0f, m_window->getSize().y / 2.0f);
 		}
 		
+
+
 		// Vertical
 		if (pos.y < 0 && ballcomponent.dir.y < 0.0f)
 		{
@@ -68,5 +99,7 @@ void BallSystem::update(entityx::EntityManager& es, entityx::EventManager& event
 		}
 
 		});
+
+	
 
 }

@@ -102,7 +102,7 @@ void GameState::initializeSystems() {
 	systems.add<TargetingSystem>();
 	systems.add<BallSystem>(m_game->getWindow());
 	systems.add<AISystem>(m_game->getWindow());
-	systems.add<TextSystem>(m_game->getWindow());
+	systems.add<TextSystem>(m_game->getWindow(), events);
 
 	auto animationSystem = systems.add<AnimationSystem>();
 	systems.add<SpriteRenderSystem>(m_game);
@@ -137,7 +137,8 @@ void GameState::initializeEntities() {
 		auto comp = m_playerEntity.assign<sf::Sprite>().get();
 		comp->setPosition(25, m_game->getWindow()->getSize().y / 2.0f - comp->getGlobalBounds().height / 2.0f);
 		comp->setTexture(TextureHandler::getInstance().getTexture("../Resources/paddel.png"));
-		m_playerEntity.assign<PaddelComponent>();
+		auto padcomp = m_playerEntity.assign<PaddelComponent>();
+		padcomp->playerID = 0;
 
 		{
 			//Create fire entity to render the ball over the fire
@@ -185,16 +186,31 @@ void GameState::initializeEntities() {
 			auto opponentEntitySprite = opponentEntity.assign<sf::Sprite>().get();
 			opponentEntitySprite->setTexture(TextureHandler::getInstance().getTexture("../Resources/paddel.png"));
 			opponentEntitySprite->setPosition(m_game->getWindow()->getSize().x - 25 - comp->getGlobalBounds().width, m_game->getWindow()->getSize().y / 2.0f - comp->getGlobalBounds().height / 2.0f);
-			opponentEntity.assign<PaddelComponent>();
+			opponentEntitySprite->setColor(sf::Color::Red);
+			auto padcomp2 = opponentEntity.assign<PaddelComponent>();
+			padcomp2->playerID = 1;
 			auto aicomp = opponentEntity.assign<AIComponent>();
 			aicomp->ball = ent2;
 		}
+		
+		{
+			entityx::Entity testtextEntity = entities.create();
+			auto textcomp = testtextEntity.assign<TextComponent>().get();
+			textcomp->text.setFont(m_game->GetFont());
+			textcomp->text.setString("Player 1");
+			textcomp->text.setPosition(m_game->getWindow()->getSize().x / 4.0f - textcomp->text.getGlobalBounds().width / 2, 0.0f);
 
-		entityx::Entity testtextEntity = entities.create();
-		auto textcomp = m_playerEntity.assign<TextComponent>().get();
-		textcomp->text.setFont(m_game->GetFont());
-		textcomp->text.setString("Score: f ewagreahtrea hter<ajrejadf<a jezrtgr");
-		textcomp->text.setPosition(m_game->getWindow()->getSize().x / 2.0f - textcomp->text.getGlobalBounds().width / 2, 0.0f);
+			systems.system<TextSystem>().get()->setPlayerText(testtextEntity, 0);
+		}
+		{
+			entityx::Entity testtextEntity = entities.create();
+			auto textcomp = testtextEntity.assign<TextComponent>().get();
+			textcomp->text.setFont(m_game->GetFont());
+			textcomp->text.setString("Player 2");
+			textcomp->text.setPosition(m_game->getWindow()->getSize().x *3 / 4.0f - textcomp->text.getGlobalBounds().width / 2, 0.0f);
+
+			systems.system<TextSystem>().get()->setPlayerText(testtextEntity, 1);
+		}
 
 		{
 			//Create the animated character entity

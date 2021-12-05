@@ -164,7 +164,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Cannonball.cpp" />
     <ClCompile Include="ECS\Systems\AISystem.cpp" />
     <ClCompile Include="ECS\Systems\BallSystem.cpp" />
     <ClCompile Include="ECS\Systems\CollisionSystem.cpp" />
@@ -186,7 +185,6 @@
     <ClCompile Include="TextureHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cannonball.h" />
     <ClInclude Include="ECS\Systems.h" />
     <ClInclude Include="ECS\Systems\AISystem.h" />
     <ClInclude Include="ECS\Systems\BallSystem.h" />
@@ -195,6 +193,7 @@
     <ClInclude Include="ECS\Systems\SpriteAnimationSystem.h" />
     <ClInclude Include="ECS\Systems\SpriteRenderSystem.h" />
     <ClInclude Include="ECS\Systems\TextSystem.h" />
+    <ClInclude Include="events\ScoreEvent.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="gameObjects\gameObject.h" />
     <ClInclude Include="state\GameState.h" />
