@@ -5,3 +5,6 @@
 #include "Systems/BallSystem.h"
 #include "Systems/AISystem.h"
 #include "Systems/TextSystem.h"
+#include "Systems/PickingSystem.h"
+#include "Systems/CollisionSystem.h"
+#include "Systems/ShapeRenderSystem.h"

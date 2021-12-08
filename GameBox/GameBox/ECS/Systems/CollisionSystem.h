@@ -2,6 +2,10 @@
 #include "entityx/entityx.h"
 #include "SFML/Graphics/Sprite.hpp"
 
+struct CollisionComponent
+{
+
+};
 
 class CollisionSystem : public entityx::System<CollisionSystem>
 {
