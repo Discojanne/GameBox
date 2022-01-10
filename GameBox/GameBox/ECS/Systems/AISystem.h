@@ -27,13 +27,30 @@ struct AIComponent
 	std::vector<sf::Vector2f> targetPosVector;
 };
 
+// Put the map here until i figure out a better place
+struct MapComponent
+{
+	
+	MapComponent(int w = 0, int h = 0) {
+		width = w;
+		height = h;
+	}
+	unsigned int width;
+	unsigned int height;
+	bool moveLeft = false;
+	bool moveRight = false;
+	bool moveUp = false;
+	bool moveDown = false;
+	float moveSpeed = 700.0f;
+};
+
 class AStarPathfinding
 {
 public:
 	
-	AStarPathfinding(entityx::EntityManager& es, sf::RenderWindow* window) 
+	AStarPathfinding(entityx::EntityManager& es, sf::RenderWindow* window, unsigned int mapWidth, unsigned int mapHeight) 
 		: m_entitymanager(&es), m_window(window){
-		Create(window);
+		Create(MapComponent(mapWidth, mapHeight));
 	};
 	~AStarPathfinding() {
 		delete[] nodes;
@@ -42,10 +59,14 @@ public:
 			delete[] visualNodes;
 		}
 	};
+	// how many horizontal nodes 
 	int const getWidth() { return nManWidth; };
+	// -||- vertical
 	int const getHeight() { return nManHeight; };
 	
-	
+	bool drawNodes = true;
+	int mapWidth;
+	int mapHeight;
 
 private:
 	struct sNode
@@ -60,10 +81,12 @@ private:
 		sNode* parent;				// Node connecting to this node that offers sh
 	};
 
-	bool drawNodes = true;
 	
-	int nManWidth = 16;
-	int nManHeight = 16; // strange things happens when 8
+	// number of nodes in each dimension
+	int nManWidth = 32;
+	int nManHeight = 32; // strange things happens when 8
+
+
 
 	sNode* nodeStart = nullptr;
 	sNode* nodeEnd = nullptr;
@@ -76,11 +99,15 @@ private:
 public:
 	sNode* nodes = nullptr;
 
-	void Create(sf::RenderWindow* window) {
+	// Send in map dimensions
+	void Create(MapComponent window) {
+
+		mapWidth = window.width;
+		mapHeight = window.height;
 
 		nodes = new sNode[((size_t)nManWidth * nManHeight)];
-		float posScaleX = window->getSize().x / nManWidth;
-		float posScaleY = window->getSize().y / nManHeight;
+		float posScaleX = mapWidth / nManWidth;
+		float posScaleY = mapHeight / nManHeight;
 		std::cout << posScaleX << "   " << posScaleY << std::endl;
 		for (size_t x = 0; x < nManWidth; x++)
 		{
@@ -93,7 +120,7 @@ public:
 				nodes[y * nManWidth + x].bVisited = false;
 			}
 		}
-		if (drawNodes)
+		/*if (drawNodes)
 		{
 			visualNodes = new entityx::Entity[nManWidth * (size_t)nManHeight];
 			for (int x = 0; x < nManWidth; x++)
@@ -101,12 +128,12 @@ public:
 				for (int y = 0; y < nManHeight; y++)
 				{
 					visualNodes[y * nManWidth + x] = m_entitymanager->create();
-					auto shape = visualNodes[y * nManWidth + x].assign<sf::CircleShape>(10.0f).get();
+					auto shape = visualNodes[y * nManWidth + x].assign<sf::CircleShape>(5.0f).get();
 					shape->setPosition(x * posScaleX, y * posScaleY);
 					shape->setFillColor(sf::Color::Green);
 				}
 			}
-		}
+		}*/
 
 		// Create connections
 		for (int x = 0; x < nManWidth; x++)
@@ -143,13 +170,30 @@ public:
 
 	};
 
+	void DrawNodes() {
+		float posScaleX = mapWidth / nManWidth;
+		float posScaleY = mapHeight / nManHeight;
+
+		visualNodes = new entityx::Entity[nManWidth * (size_t)nManHeight];
+		for (int x = 0; x < nManWidth; x++)
+		{
+			for (int y = 0; y < nManHeight; y++)
+			{
+				visualNodes[y * nManWidth + x] = m_entitymanager->create();
+				auto shape = visualNodes[y * nManWidth + x].assign<sf::CircleShape>(5.0f).get();
+				shape->setPosition(x * posScaleX, y * posScaleY);
+				shape->setFillColor(sf::Color::Green);
+			}
+		}
+	};
+
 	void Solve_AStar(sf::Vector2f startPos, sf::Vector2f targetPos, std::vector<sf::Vector2f>& posVector) {
 
 
 		// Determine start end end node from the start and target postition
 
-		float dividerX = m_window->getSize().x / nManWidth;
-		float dividerY = m_window->getSize().y / nManHeight;
+		float dividerX = mapWidth / nManWidth;
+		float dividerY = mapHeight / nManHeight;
 
 		int nSelectedNodeX = startPos.x / dividerX + 0.5f;
 		int nSelectedNodeY = startPos.y / dividerY + 0.5f;
@@ -161,8 +205,22 @@ public:
 				nodeStart = &nodes[nSelectedNodeY * nManHeight + nSelectedNodeX];
 			}
 		}
-		nSelectedNodeX = targetPos.x / dividerX + 0.5f;
-		nSelectedNodeY = targetPos.y / dividerY + 0.5f;
+
+		if (targetPos.x > mapWidth)
+			nSelectedNodeX = mapWidth / dividerX + 0.5f;
+		else if (targetPos.x < 0)
+			nSelectedNodeX = 0;
+		else
+			nSelectedNodeX = targetPos.x / dividerX + 0.5f;
+		
+		if (targetPos.y > mapHeight)
+			nSelectedNodeY = mapHeight / dividerY + 0.5f;
+		else if (targetPos.y < 0)
+			nSelectedNodeY = 0;
+		else
+			nSelectedNodeY = targetPos.y / dividerY + 0.5f;
+
+		
 
 		if (nSelectedNodeX >= 0 && nSelectedNodeX < nManWidth)
 		{
@@ -280,7 +338,7 @@ public:
 class AISystem : public entityx::System<AISystem>, public entityx::Receiver<AISystem>
 {
 public:
-	explicit AISystem(sf::RenderWindow* window, entityx::EventManager& events, entityx::EntityManager& es);
+	explicit AISystem(sf::RenderWindow* window, entityx::EventManager& events, entityx::EntityManager& es, sf::Vector2i mapDims);
 	~AISystem();
 	void update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt) override;
 
@@ -288,6 +346,8 @@ public:
 
 	// used to debug A*
 	void tempClickTest(const sf::Vector2f& mousePos);
+	// used to debug A*, visualize each node
+	void DrawNodes();
 private:
 	sf::RenderWindow* m_window;
 	entityx::EntityManager* m_entitymanager;

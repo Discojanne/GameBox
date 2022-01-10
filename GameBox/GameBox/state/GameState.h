@@ -24,5 +24,6 @@ private:
 
 	Game* m_game;
 
+	entityx::Entity m_mapEntity;
 
 };

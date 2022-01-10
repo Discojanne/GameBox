@@ -3,8 +3,8 @@
 #include "PickingSystem.h"
 #include "CollisionSystem.h"
 
-AISystem::AISystem(sf::RenderWindow* window, entityx::EventManager& events, entityx::EntityManager& es) 
-	: m_window(window), m_eventmanager(&events), m_entitymanager(&es), Astar(es, window)
+AISystem::AISystem(sf::RenderWindow* window, entityx::EventManager& events, entityx::EntityManager& es, sf::Vector2i mapDims)
+	: m_window(window), m_eventmanager(&events), m_entitymanager(&es), Astar(es, window, mapDims.x, mapDims.y)
 {
 	m_eventmanager = &events;
 	m_eventmanager->subscribe<ClickActionEvent>(*this);
@@ -135,6 +135,33 @@ void AISystem::update(entityx::EntityManager& es, entityx::EventManager& events,
 
 		});
 
+	// Camera movement
+	m_entitymanager->each<MapComponent>([&](entityx::Entity entity, MapComponent mapComp) {
+		sf::View v = m_window->getView();
+		
+		if (mapComp.moveLeft)
+		{
+			v.move(-mapComp.moveSpeed * dt, 0);
+			m_window->setView(v);
+		}
+		else if (mapComp.moveRight)
+		{
+			v.move(mapComp.moveSpeed * dt, 0);
+			m_window->setView(v);
+		}
+
+		if (mapComp.moveUp)
+		{
+			v.move(0, -mapComp.moveSpeed * dt);
+			m_window->setView(v);
+		}
+		else if (mapComp.moveDown)
+		{
+			v.move(0, mapComp.moveSpeed * dt);
+			m_window->setView(v);
+		}
+
+		});
 }
 
 void AISystem::receive(const ClickActionEvent& event)
@@ -161,38 +188,44 @@ void AISystem::receive(const ClickActionEvent& event)
 
 void AISystem::tempClickTest(const sf::Vector2f& mousePos)
 {
-
-	// make sure to hit the circleshape or the value will change without the color...
-	float dividerX = m_window->getSize().x / Astar.getWidth();
-	float dividerY = m_window->getSize().y / Astar.getHeight();
-
-	int nSelectedNodeX = mousePos.x / dividerX;
-	int nSelectedNodeY = mousePos.y / dividerY;
-
-	//std::cout << m_window->getSize().x << "   " << m_window->getSize().y << std::endl;
-	
-	if (nSelectedNodeX >= 0 && nSelectedNodeX < Astar.getWidth())
+	if (Astar.drawNodes)
 	{
-		if (nSelectedNodeY >= 0 && nSelectedNodeY < Astar.getHeight())
+		// make sure to hit the circleshape or the value will change without the color...
+		float dividerX = Astar.mapWidth / Astar.getWidth();
+		float dividerY = Astar.mapHeight / Astar.getHeight();
+
+		int nSelectedNodeX = mousePos.x / dividerX;
+		int nSelectedNodeY = mousePos.y / dividerY;
+
+		if (nSelectedNodeX >= 0 && nSelectedNodeX < Astar.getWidth())
 		{
-			Astar.nodes[nSelectedNodeY * Astar.getWidth() + nSelectedNodeX].bObstacle = !Astar.nodes[nSelectedNodeY * Astar.getWidth() + nSelectedNodeX].bObstacle;
-			std::cout << Astar.nodes[nSelectedNodeY * Astar.getWidth() + nSelectedNodeX].vecNeighbours.size() << "   " << std::endl;
+			if (nSelectedNodeY >= 0 && nSelectedNodeY < Astar.getHeight())
+			{
+				Astar.nodes[nSelectedNodeY * Astar.getWidth() + nSelectedNodeX].bObstacle = !Astar.nodes[nSelectedNodeY * Astar.getWidth() + nSelectedNodeX].bObstacle;
+				std::cout << Astar.nodes[nSelectedNodeY * Astar.getWidth() + nSelectedNodeX].vecNeighbours.size() << "   " << std::endl;
 
-			m_entitymanager->each<sf::CircleShape>([&](entityx::Entity testedEntity, sf::CircleShape& shape) {
+				m_entitymanager->each<sf::CircleShape>([&](entityx::Entity testedEntity, sf::CircleShape& shape) {
 
-				if (shape.getGlobalBounds().contains(mousePos)) {
-					if (Astar.nodes[nSelectedNodeY * Astar.getWidth() + nSelectedNodeX].bObstacle)
-					{
-						shape.setFillColor(sf::Color::Red);
+					if (shape.getGlobalBounds().contains(mousePos)) {
+						if (Astar.nodes[nSelectedNodeY * Astar.getWidth() + nSelectedNodeX].bObstacle)
+						{
+							shape.setFillColor(sf::Color::Red);
+						}
+						else
+						{
+							shape.setFillColor(sf::Color::Green);
+						}
 					}
-					else
-					{
-						shape.setFillColor(sf::Color::Green);
-					}
-				}
-
-				});
-			
+					});
+			}
 		}
+	}
+}
+
+void AISystem::DrawNodes()
+{
+	if (Astar.drawNodes)
+	{
+		Astar.DrawNodes();
 	}
 }
