@@ -141,24 +141,36 @@ void AISystem::update(entityx::EntityManager& es, entityx::EventManager& events,
 		
 		if (mapComp.moveLeft)
 		{
-			v.move(-mapComp.moveSpeed * dt, 0);
-			m_window->setView(v);
+			if (v.getCenter().x > m_window->getSize().x * 0.4f)
+			{
+				v.move(-mapComp.moveSpeed * dt, 0);
+				m_window->setView(v);
+			}
 		}
 		else if (mapComp.moveRight)
 		{
-			v.move(mapComp.moveSpeed * dt, 0);
-			m_window->setView(v);
+			if (v.getCenter().x < mapComp.width - m_window->getSize().x * 0.4f)
+			{
+				v.move(mapComp.moveSpeed* dt, 0);
+				m_window->setView(v);
+			}
 		}
 
 		if (mapComp.moveUp)
 		{
-			v.move(0, -mapComp.moveSpeed * dt);
-			m_window->setView(v);
+			if (v.getCenter().y > m_window->getSize().y * 0.4f)
+			{
+				v.move(0, -mapComp.moveSpeed * dt);
+				m_window->setView(v);
+			}
 		}
 		else if (mapComp.moveDown)
 		{
-			v.move(0, mapComp.moveSpeed * dt);
-			m_window->setView(v);
+			if (v.getCenter().y < mapComp.height - m_window->getSize().y * 0.4f)
+			{
+				v.move(0, mapComp.moveSpeed* dt);
+				m_window->setView(v);
+			}
 		}
 
 		});
