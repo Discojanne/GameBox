@@ -13,7 +13,8 @@ namespace AI {
 	enum State
 	{
 		IDLE,
-		WALKING
+		WALKING,
+		ATTACKING
 	};
 }
 
@@ -50,6 +51,10 @@ public:
 	
 	AStarPathfinding(entityx::EntityManager& es, sf::RenderWindow* window, unsigned int mapWidth, unsigned int mapHeight) 
 		: m_entitymanager(&es), m_window(window){
+
+		std::cout << "Loading map size, width: " << mapWidth << " , height: "
+			<< mapHeight << std::endl;
+
 		Create(MapComponent(mapWidth, mapHeight));
 	};
 	~AStarPathfinding() {
@@ -83,8 +88,8 @@ private:
 
 	
 	// number of nodes in each dimension
-	int nManWidth = 32;
-	int nManHeight = 32; // strange things happens when 8
+	int nManWidth = 64;
+	int nManHeight = 64; // strange things happens when 8
 
 
 
@@ -108,7 +113,6 @@ public:
 		nodes = new sNode[((size_t)nManWidth * nManHeight)];
 		float posScaleX = mapWidth / nManWidth;
 		float posScaleY = mapHeight / nManHeight;
-		std::cout << posScaleX << "   " << posScaleY << std::endl;
 		for (size_t x = 0; x < nManWidth; x++)
 		{
 			for (size_t y = 0; y < nManHeight; y++)
@@ -168,6 +172,9 @@ public:
 		nodeStart = &nodes[(nManHeight / 2) * nManWidth + 1];
 		nodeEnd = &nodes[(nManHeight / 2) * nManWidth + nManWidth - 2];
 
+		std::cout << "Astar created " << nManWidth * nManHeight << " nodes, (" << nManWidth
+			<< ") (" << nManHeight << ")" << std::endl;
+
 	};
 
 	void DrawNodes() {
@@ -187,52 +194,45 @@ public:
 		}
 	};
 
-	void Solve_AStar(sf::Vector2f startPos, sf::Vector2f targetPos, std::vector<sf::Vector2f>& posVector) {
-
-
-		// Determine start end end node from the start and target postition
-
+	sf::Vector2i getClosestNodeFromPos(sf::Vector2f INpos) {
 		float dividerX = mapWidth / nManWidth;
 		float dividerY = mapHeight / nManHeight;
+		float offset = 0.49f; // As it's an int, this makes it round up sometimes
 
-		int nSelectedNodeX = startPos.x / dividerX + 0.5f;
-		int nSelectedNodeY = startPos.y / dividerY + 0.5f;
+		sf::Vector2f pos = INpos;
 
-		if (nSelectedNodeX >= 0 && nSelectedNodeX < nManWidth)
+		if (pos.x > mapWidth)
 		{
-			if (nSelectedNodeY >= 0 && nSelectedNodeY < nManHeight)
-			{
-				nodeStart = &nodes[nSelectedNodeY * nManHeight + nSelectedNodeX];
-			}
+			pos.x = mapWidth - 1;
+		}
+		else if (pos.x < 0)
+		{
+			pos.x = 0;
 		}
 
-		if (targetPos.x > mapWidth)
-			nSelectedNodeX = mapWidth / dividerX + 0.5f;
-		else if (targetPos.x < 0)
-			nSelectedNodeX = 0;
-		else
-			nSelectedNodeX = targetPos.x / dividerX + 0.5f;
-		
-		if (targetPos.y > mapHeight)
-			nSelectedNodeY = mapHeight / dividerY + 0.5f;
-		else if (targetPos.y < 0)
-			nSelectedNodeY = 0;
-		else
-			nSelectedNodeY = targetPos.y / dividerY + 0.5f;
-
-		
-
-		if (nSelectedNodeX >= 0 && nSelectedNodeX < nManWidth)
+		if (pos.y > mapHeight)
 		{
-			if (nSelectedNodeY >= 0 && nSelectedNodeY < nManHeight)
-			{
-				nodeEnd = &nodes[nSelectedNodeY * nManHeight + nSelectedNodeX];
-			}
+			pos.y = mapHeight - 1;
+		}
+		else if (pos.y < 0)
+		{
+			pos.y = 0;
 		}
 
+		pos.x = std::min(nManWidth - 1.0f, pos.x / dividerX + offset);
+		pos.y = std::min(nManHeight - 1.0f, pos.y / dividerY + offset);
 
+		return sf::Vector2i((int)pos.x, (int)pos.y);
+	};
 
+	void Solve_AStar(sf::Vector2f startPos, sf::Vector2f targetPos, std::vector<sf::Vector2f>& posVector) {
 
+		// Determine start end end node from the start and target postition
+		sf::Vector2i selectedStartNode = getClosestNodeFromPos(startPos);
+		nodeStart = &nodes[selectedStartNode.y * nManHeight + selectedStartNode.x];
+
+		sf::Vector2i selectedEndNode = getClosestNodeFromPos(targetPos);
+		nodeEnd = &nodes[selectedEndNode.y * nManHeight + selectedEndNode.x];
 
 
 		// Reset navigation graph - default all node states

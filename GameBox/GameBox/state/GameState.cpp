@@ -199,13 +199,12 @@ void GameState::initializeSystems() {
 	systems.add<BallSystem>(m_game->getWindow());
 
 	
-		m_mapEntity = entities.create();
-		auto spriteComp = m_mapEntity.assign<sf::Sprite>().get();
-		spriteComp->setTexture(TextureHandler::getInstance().getTexture("../Resources/testmap1small.png"));
-		auto mapComp = m_mapEntity.assign<MapComponent>().get();
-		mapComp->width = spriteComp->getGlobalBounds().width;
-		mapComp->height = spriteComp->getGlobalBounds().height;
-	
+	m_mapEntity = entities.create();
+	auto spriteComp = m_mapEntity.assign<sf::Sprite>().get();
+	spriteComp->setTexture(TextureHandler::getInstance().getTexture("../Resources/testmap1small.png"));
+	auto mapComp = m_mapEntity.assign<MapComponent>().get();
+	mapComp->width = spriteComp->getGlobalBounds().width;
+	mapComp->height = spriteComp->getGlobalBounds().height;
 
 	// Maybe gather map size from menu?
 	systems.add<AISystem>(m_game->getWindow(), events, entities, sf::Vector2i(mapComp->width, mapComp->height));

@@ -127,6 +127,10 @@ void AISystem::update(entityx::EntityManager& es, entityx::EventManager& events,
 			
 
 			break;
+
+		case AI::State::ATTACKING:
+
+
 		default:
 			break;
 		}
