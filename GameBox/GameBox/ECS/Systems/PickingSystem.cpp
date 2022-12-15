@@ -22,14 +22,13 @@ void PickingSystem::clickLeft(entityx::EntityManager& es, entityx::EventManager&
 
 	// Loop each sprite to find the target
 
-	es.each<sf::Sprite>([&](entityx::Entity entity, sf::Sprite& sprite) {
+	es.each<SelectableComponent, sf::Sprite>([&](entityx::Entity entity, SelectableComponent& selectedComp, sf::Sprite& sprite) {
 		
-		if (sprite.getGlobalBounds().contains(mousePos) && !entity.has_component<MapComponent>())
+		if (sprite.getGlobalBounds().contains(mousePos))
 		{
 			notSpriteHit = false;
 
-			// Dont ever select the map
-			if (!entity.has_component<SelectedComponent>() && !entity.has_component<MapComponent>())
+			if (!entity.has_component<SelectedComponent>())
 			{
 				// shift allwos you to select multiple units
 				if (!shiftclick)
@@ -46,7 +45,7 @@ void PickingSystem::clickLeft(entityx::EntityManager& es, entityx::EventManager&
 			//sprite.setColor(sf::Color::Blue);
 		}
 		
-		});
+	});
 
 	if (notSpriteHit && !shiftclick)
 	{

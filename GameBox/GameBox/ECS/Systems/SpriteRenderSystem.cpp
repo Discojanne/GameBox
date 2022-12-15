@@ -11,3 +11,13 @@ void SpriteRenderSystem::update(entityx::EntityManager& es, entityx::EventManage
 		m_pGame->getWindow()->draw(sprite);
 		});
 }
+
+bool const SpriteRenderSystem::getIsBlueprintActive()
+{
+	return m_isBlueprintActive;
+}
+
+void SpriteRenderSystem::setIsBlueprintActive(bool flag)
+{
+	m_isBlueprintActive = flag;
+}

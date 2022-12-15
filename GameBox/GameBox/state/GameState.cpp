@@ -53,16 +53,21 @@ void GameState::processInput(float dt) {
 			playerSprite->setPosition(playerSprite->getPosition().x, m_game->getWindow()->getSize().y - playerSprite->getGlobalBounds().height);
 		}*/
 
-		auto ent = entities.create();
-		auto spriteComp = ent.assign<sf::Sprite>().get();
-		spriteComp->setPosition(sf::Vector2f(sf::Mouse::getPosition(*m_game->getWindow()).x, 
-			sf::Mouse::getPosition(*m_game->getWindow()).y));
-		spriteComp->setTexture(TextureHandler::getInstance().getTexture("../Resources/house.png"));
-		//spriteComp->setScale(3, 3);
-		ent.assign<FollowMouseComponent>();
-		ent.assign<CollisionComponent>();
-	}
+		if (!systems.system<SpriteRenderSystem>().get()->getIsBlueprintActive())
+		{
+			auto ent = entities.create();
+			auto spriteComp = ent.assign<sf::Sprite>().get();
+			spriteComp->setPosition(m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow())));
+			spriteComp->setTexture(TextureHandler::getInstance().getTexture("../Resources/house.png"));
+			spriteComp->setColor(sf::Color::Blue);
+			spriteComp->setScale(0.25f, 0.25f);
+			ent.assign<FollowMouseComponent>();
+			ent.assign<CollisionComponent>();
 
+			systems.system<SpriteRenderSystem>().get()->setIsBlueprintActive(true);
+		}
+		
+	}
 
 }
 
@@ -252,7 +257,6 @@ void GameState::initializeEntities() {
 	//===Create Entities===
 	{
 		
-
 		for (unsigned int i = 0; i < 10; i++)
 		{
 			auto ent = entities.create();
@@ -262,6 +266,7 @@ void GameState::initializeEntities() {
 			spriteComp->setScale(3, 3);
 			ent.assign<AIComponent>();
 			ent.assign<CollisionComponent>();
+			ent.assign<SelectableComponent>();
 		}
 
 	}

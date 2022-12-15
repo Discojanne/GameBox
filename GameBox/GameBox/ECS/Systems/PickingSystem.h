@@ -8,6 +8,9 @@ struct SelectedComponent
 
 };
 
+struct SelectableComponent
+{};
+
 class PickingSystem : public entityx::System<PickingSystem>
 {
 public:

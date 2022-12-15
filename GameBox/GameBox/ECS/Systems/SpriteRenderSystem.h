@@ -12,6 +12,10 @@ public:
 	explicit SpriteRenderSystem(Game* pGame);
 	~SpriteRenderSystem();
 	void update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt) override;
+
+	bool const getIsBlueprintActive();
+	void setIsBlueprintActive(bool flag);
 private:
 	Game* m_pGame;
+	bool m_isBlueprintActive = false;
 };
