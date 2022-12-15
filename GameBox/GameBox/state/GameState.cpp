@@ -45,13 +45,22 @@ void GameState::processInput(float dt) {
 		}*/
 	
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
 		/*auto playerSprite = m_playerEntity.component<sf::Sprite>().get();
 		playerSprite->move(0, dt * 600);
 		if (playerSprite->getPosition().y > m_game->getWindow()->getSize().y - playerSprite->getGlobalBounds().height)
 		{
 			playerSprite->setPosition(playerSprite->getPosition().x, m_game->getWindow()->getSize().y - playerSprite->getGlobalBounds().height);
 		}*/
+
+		auto ent = entities.create();
+		auto spriteComp = ent.assign<sf::Sprite>().get();
+		spriteComp->setPosition(sf::Vector2f(sf::Mouse::getPosition(*m_game->getWindow()).x, 
+			sf::Mouse::getPosition(*m_game->getWindow()).y));
+		spriteComp->setTexture(TextureHandler::getInstance().getTexture("../Resources/house.png"));
+		//spriteComp->setScale(3, 3);
+		ent.assign<FollowMouseComponent>();
+		ent.assign<CollisionComponent>();
 	}
 
 

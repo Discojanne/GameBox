@@ -3,6 +3,10 @@
 #include "SFML/Graphics.hpp"
 #include "../../Game.h"
 
+struct FollowMouseComponent
+{
+};
+
 class SpriteRenderSystem : public entityx::System<SpriteRenderSystem> {
 public:
 	explicit SpriteRenderSystem(Game* pGame);
