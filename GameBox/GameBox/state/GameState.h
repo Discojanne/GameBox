@@ -1,13 +1,10 @@
 #pragma once
 
 #include <sstream>
-#include "../Cannonball.h"
 #include <iostream>
 #include "State.h"
 
-//#include "../AnimatedGameObject.h"
 #include "../TextureHandler.h"
-#include "../gameObjects/gameObject.h"
 
 class GameState final : public State {
 public:
@@ -25,10 +22,8 @@ private:
 	void initializeAnimations();
 	void initializeEntities();
 
-	std::vector<GameObject*> m_gameObjectList;
-	sf::Sprite m_BackgroundSprite;
-	entityx::Entity m_playerEntity;
+	Game* m_game;
 
-	sf::Text text;
-	std::ostringstream stream;
+	entityx::Entity m_mapEntity;
+
 };
