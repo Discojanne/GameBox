@@ -26,4 +26,7 @@ private:
 
 	entityx::Entity m_mapEntity;
 
+	bool m_isLeftMouseButtonDown = false;
+	sf::Vector2f m_mouseDownPosition = sf::Vector2f(0, 0);
+	sf::FloatRect m_selectionRectangle;
 };
