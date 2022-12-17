@@ -17,7 +17,7 @@ GameState::GameState(Game* pGame) : State(States::Game, pGame), m_game(pGame) {
 }
 
 GameState::~GameState() {
-	
+
 }
 
 void GameState::update(float dt) {
@@ -27,11 +27,10 @@ void GameState::update(float dt) {
 	systems.update<BallSystem>(dt);
 	systems.update<AISystem>(dt);
 
-	
 	systems.update<SpriteRenderSystem>(dt);
 	systems.update<ShapeRenderSystem>(dt);
 	systems.update<TextSystem>(dt);
-	
+
 }
 
 void GameState::processInput(float dt) {
@@ -43,7 +42,7 @@ void GameState::processInput(float dt) {
 		{
 			playerSprite->setPosition(playerSprite->getPosition().x, 0.0f);
 		}*/
-	
+
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 		/*auto playerSprite = m_playerEntity.component<sf::Sprite>().get();
@@ -73,8 +72,6 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 			systems.system<AISystem>().get()->tempClickTest(translated_pos);
 		}
 		if (windowEvent.key.code == sf::Keyboard::D) {
-			
-
 			// get the current mouse position in the window
 			sf::Vector2i pixelPos = sf::Mouse::getPosition(*m_game->getWindow());
 
@@ -92,29 +89,45 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 			tmpView.zoom(0.9f);
 			m_game->getWindow()->setView(tmpView);
 		}
-	case sf::Event::MouseButtonPressed:
-
-
+	case sf::Event::MouseButtonReleased:
 		// Mouse buttons
-		switch (windowEvent.key.code)
-		{
+		switch (windowEvent.key.code) {
 			// Select 
 		case sf::Mouse::Left:
 
-			if (windowEvent.type == 9)
-			{
-				//std::cout << "mouse pos: " << windowEvent.mouseButton.x << " " << windowEvent.mouseButton.y << std::endl;
-				std::cout << "Leftclick" << std::endl;
-				//m_playerEntity.component<sf::Sprite>().get()->setPosition(windowEvent.mouseButton.x, windowEvent.mouseButton.y);
-				auto translated_pos = m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow()));
-				//std::cout << "mouse pos2: " << translated_pos.x << " " << translated_pos.y << std::endl;
-				systems.system<PickingSystem>().get()->clickLeft(entities, events, translated_pos, sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
-				
-				
-				//std::cout << sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) << std::endl;
-				
-				//m_playerEntity.component<AIComponent>().get()->state = AI::State::WALKING;
-				//m_playerEntity.component<AIComponent>().get()->targetPos = translated_pos;
+			std::cout << "Leftclick Up" << std::endl;
+			m_isLeftMouseButtonDown = false;
+			systems.system<SpriteRenderSystem>().get()->setRenderSelectionRectangle(false);
+
+			sf::Vector2f mouseUpPosition = m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow()));;
+
+			if (mouseUpPosition.x == m_mouseDownPosition.x && mouseUpPosition.y == m_mouseDownPosition.y) {
+				systems.system<PickingSystem>().get()->clickLeft(entities, events, mouseUpPosition, sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
+			} else {
+				systems.system<PickingSystem>().get()->selectEntitiesInArea(entities, events, m_selectionRectangle, sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
+			}
+
+			break;
+		}
+
+		break;
+	case sf::Event::MouseButtonPressed:
+		// Mouse buttons
+		switch (windowEvent.key.code) {
+			// Select 
+		case sf::Mouse::Left:
+
+			std::cout << "Leftclick Down" << std::endl;
+			if (m_isLeftMouseButtonDown == false) {
+				systems.system<SpriteRenderSystem>().get()->setRenderSelectionRectangle(true);
+
+				m_isLeftMouseButtonDown = true;
+				m_mouseDownPosition = m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow()));
+				m_selectionRectangle.left = m_mouseDownPosition.x;
+				m_selectionRectangle.top = m_mouseDownPosition.y;
+				m_selectionRectangle.width = 0;
+				m_selectionRectangle.height = 0;
+				systems.system<SpriteRenderSystem>().get()->updateSelectionRectangle(m_selectionRectangle);
 
 			}
 
@@ -122,14 +135,11 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 			// Action
 		case sf::Mouse::Right:
 
-			if (windowEvent.type == 9)
-			{
+			if (windowEvent.type == 9) {
 				std::cout << "Rightcluck" << std::endl;
 
 				auto translated_pos = m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow()));
 				systems.system<PickingSystem>().get()->clickRight(entities, events, translated_pos);
-
-
 
 				//m_playerEntity.component<AIComponent>().get()->state = AI::State::WALKING;
 				//m_playerEntity.component<AIComponent>().get()->targetPos = translated_pos;
@@ -145,48 +155,42 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 		// End of mouse buttons
 
 	case sf::Event::EventType::MouseMoved:
-
+	{
 		//std::cout << "test" << std::endl;
+		auto translated_pos = m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow()));
+
+		m_selectionRectangle.height = translated_pos.y - m_mouseDownPosition.y;
+		m_selectionRectangle.width = translated_pos.x - m_mouseDownPosition.x;
+
+		systems.system<SpriteRenderSystem>().get()->updateSelectionRectangle(m_selectionRectangle);
 
 
-		
-		if (mousePos.x < treshold)
-		{
+		if (mousePos.x < treshold) {
 			m_mapEntity.component<MapComponent>().get()->moveLeft = true;
-		}
-		else
-		{
+		} else {
 			m_mapEntity.component<MapComponent>().get()->moveLeft = false;
 		}
 
-		if (mousePos.x > m_game->getWindow()->getSize().x - treshold)
-		{
+		if (mousePos.x > m_game->getWindow()->getSize().x - treshold) {
 			m_mapEntity.component<MapComponent>().get()->moveRight = true;
-		}
-		else
-		{
+		} else {
 			m_mapEntity.component<MapComponent>().get()->moveRight = false;
 		}
 
-		if (mousePos.y < treshold)
-		{
+		if (mousePos.y < treshold) {
 			m_mapEntity.component<MapComponent>().get()->moveUp = true;
-		}
-		else
-		{
+		} else {
 			m_mapEntity.component<MapComponent>().get()->moveUp = false;
 		}
 
-		if (mousePos.y > m_game->getWindow()->getSize().y - treshold)
-		{
+		if (mousePos.y > m_game->getWindow()->getSize().y - treshold) {
 			m_mapEntity.component<MapComponent>().get()->moveDown = true;
-		}
-		else
-		{
+		} else {
 			m_mapEntity.component<MapComponent>().get()->moveDown = false;
 		}
 
-		break;
+	}
+	break;
 
 	default:
 		break;
@@ -198,7 +202,7 @@ void GameState::initializeSystems() {
 	systems.add<TargetingSystem>();
 	systems.add<BallSystem>(m_game->getWindow());
 
-	
+
 	m_mapEntity = entities.create();
 	auto spriteComp = m_mapEntity.assign<sf::Sprite>().get();
 	spriteComp->setTexture(TextureHandler::getInstance().getTexture("../Resources/testmap1small.png"));
@@ -242,10 +246,9 @@ void GameState::initializeAnimations() {
 void GameState::initializeEntities() {
 	//===Create Entities===
 	{
-		
 
-		for (unsigned int i = 0; i < 10; i++)
-		{
+
+		for (unsigned int i = 0; i < 10; i++) {
 			auto ent = entities.create();
 			auto spriteComp = ent.assign<sf::Sprite>().get();
 			spriteComp->setPosition(25 + 69 * i, m_game->getWindow()->getSize().y / 2.0f - spriteComp->getGlobalBounds().height / 2.0f);

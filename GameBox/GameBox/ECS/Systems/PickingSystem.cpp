@@ -3,62 +3,62 @@
 #include "../../events/ClickActionEvent.h"
 #include "AISystem.h"
 
-PickingSystem::PickingSystem()
-{
+PickingSystem::PickingSystem() {
 }
 
-PickingSystem::~PickingSystem()
-{
+PickingSystem::~PickingSystem() {
 }
 
-void PickingSystem::update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt)
-{
-	
+void PickingSystem::update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt) {
+
 }
 
-void PickingSystem::clickLeft(entityx::EntityManager& es, entityx::EventManager& events, const sf::Vector2f& mousePos, bool shiftclick)
-{
-	bool notSpriteHit = true;
-
-	// Loop each sprite to find the target
-
-	es.each<sf::Sprite>([&](entityx::Entity entity, sf::Sprite& sprite) {
-		
-		if (sprite.getGlobalBounds().contains(mousePos) && !entity.has_component<MapComponent>())
-		{
-			notSpriteHit = false;
-
-			// Dont ever select the map
-			if (!entity.has_component<SelectedComponent>() && !entity.has_component<MapComponent>())
-			{
-				// shift allwos you to select multiple units
-				if (!shiftclick)
-				{
-					es.each<SelectedComponent, sf::Sprite>([&](entityx::Entity entity, SelectedComponent& selectedComp, sf::Sprite& sprite) {
-						entity.remove<SelectedComponent>();
-						sprite.setColor(sf::Color::White);
-						});
-				}
-				entity.assign<SelectedComponent>();
-				sprite.setColor(sf::Color::Blue);
-			}
-			//playerSprite->setColor(sf::Color::Blue);
-			//sprite.setColor(sf::Color::Blue);
-		}
-		
-		});
-
-	if (notSpriteHit && !shiftclick)
-	{
+void PickingSystem::clickLeft(entityx::EntityManager& es, entityx::EventManager& events, const sf::Vector2f& mousePos, bool shiftclick) {
+	// If shiftclick is false, deselect all previously selected entities.
+	if (!shiftclick) {
 		es.each<SelectedComponent, sf::Sprite>([&](entityx::Entity entity, SelectedComponent& selectedComp, sf::Sprite& sprite) {
 			entity.remove<SelectedComponent>();
 			sprite.setColor(sf::Color::White);
 			});
 	}
+
+	// Iterate over all entities with a Sprite component.
+	es.each<sf::Sprite>([&](entityx::Entity entity, sf::Sprite& sprite) {
+		// If the sprite's bounds intersect with the selection rect and the entity is not a map entity,
+		// select the entity.
+		if (sprite.getGlobalBounds().contains(mousePos) && !entity.has_component<MapComponent>()) {
+			if (!entity.has_component<SelectedComponent>()) {
+				entity.assign<SelectedComponent>();
+				sprite.setColor(sf::Color::Blue);
+			}
+		}
+
+		});
 }
 
-void PickingSystem::clickRight(entityx::EntityManager& es, entityx::EventManager& events, const sf::Vector2f& mousePos)
-{
+void PickingSystem::selectEntitiesInArea(entityx::EntityManager& es, entityx::EventManager& events, const sf::FloatRect& rect, bool shiftclick) {
+	// If shiftclick is false, deselect all previously selected entities.
+	if (!shiftclick) {
+		es.each<SelectedComponent, sf::Sprite>([&](entityx::Entity entity, SelectedComponent& selectedComp, sf::Sprite& sprite) {
+			entity.remove<SelectedComponent>();
+			sprite.setColor(sf::Color::White);
+			});
+	}
+
+	// Iterate over all entities with a Sprite component.
+	es.each<sf::Sprite>([&](entityx::Entity entity, sf::Sprite& sprite) {
+		// If the sprite's bounds intersect with the selection rect and the entity is not a map entity,
+		// select the entity.
+		if (rect.intersects(sprite.getGlobalBounds()) && !entity.has_component<MapComponent>()) {
+			if (!entity.has_component<SelectedComponent>() && !entity.has_component<MapComponent>()) {
+				entity.assign<SelectedComponent>();
+				sprite.setColor(sf::Color::Blue);
+			}
+		}
+		});
+}
+
+void PickingSystem::clickRight(entityx::EntityManager& es, entityx::EventManager& events, const sf::Vector2f& mousePos) {
 	// Loop each sprite to find the target
 
 	//es.each<sf::Sprite>([&](entityx::Entity entity, sf::Sprite& sprite) {
