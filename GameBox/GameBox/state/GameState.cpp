@@ -96,14 +96,17 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 		case sf::Mouse::Left:
 
 			std::cout << "Leftclick Up" << std::endl;
-			m_isLeftMouseButtonDown = false;
-			systems.system<SpriteRenderSystem>().get()->setRenderSelectionRectangle(false);
+			m_isLeftMouseButtonDown = false; // Update flag to indicate left mouse button is no longer down
 
-			sf::Vector2f mouseUpPosition = m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow()));;
+			systems.system<SpriteRenderSystem>().get()->setRenderSelectionRectangle(false); // Instruct SpriteRenderSystem to stop rendering selection rectangle
 
-			if (mouseUpPosition.x == m_mouseDownPosition.x && mouseUpPosition.y == m_mouseDownPosition.y) {
+			// Check if width or height of selection rectangle is less than or equal to 2 pixels
+			if (std::fabsf(m_selectionRectangle.width) <= 2 || std::fabsf(m_selectionRectangle.height) <= 2) {
+				// If so, get current mouse position and call PickingSystem's clickLeft function
+				sf::Vector2f mouseUpPosition = m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow()));;
 				systems.system<PickingSystem>().get()->clickLeft(entities, events, mouseUpPosition, sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
 			} else {
+				// If not, call PickingSystem's selectEntitiesInArea function with selection rectangle and state of LShift key as arguments
 				systems.system<PickingSystem>().get()->selectEntitiesInArea(entities, events, m_selectionRectangle, sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
 			}
 
