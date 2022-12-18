@@ -13,9 +13,21 @@ public:
 	~SpriteRenderSystem();
 	void update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt) override;
 
+	/*
+		Update the "selection rectangle".
+		To enable rendering of the "selection rectangle" pass "true" to setRenderSelectionRectangle().
+	*/
+	void updateSelectionRectangle(const sf::FloatRect& rect);
+	/*
+		Toggle rendering of the "selection rectangle".
+	*/
+	void setRenderSelectionRectangle(const bool renderSelectionRect);
+
 	bool const getIsBlueprintActive();
 	void setIsBlueprintActive(bool flag);
 private:
 	Game* m_pGame;
+	sf::FloatRect m_selectionRect;
+	bool m_renderSelectionRect = false;
 	bool m_isBlueprintActive = false;
 };
