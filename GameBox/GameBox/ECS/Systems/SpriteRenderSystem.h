@@ -3,6 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include "../../Game.h"
 
+
 class SpriteRenderSystem : public entityx::System<SpriteRenderSystem> {
 public:
 	explicit SpriteRenderSystem(Game* pGame);
@@ -18,6 +19,7 @@ public:
 		Toggle rendering of the "selection rectangle".
 	*/
 	void setRenderSelectionRectangle(const bool renderSelectionRect);
+
 private:
 	Game* m_pGame;
 	sf::FloatRect m_selectionRect;

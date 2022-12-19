@@ -44,7 +44,7 @@ void GameState::processInput(float dt) {
 		}*/
 
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
 		/*auto playerSprite = m_playerEntity.component<sf::Sprite>().get();
 		playerSprite->move(0, dt * 600);
 		if (playerSprite->getPosition().y > m_game->getWindow()->getSize().y - playerSprite->getGlobalBounds().height)
@@ -52,7 +52,6 @@ void GameState::processInput(float dt) {
 			playerSprite->setPosition(playerSprite->getPosition().x, m_game->getWindow()->getSize().y - playerSprite->getGlobalBounds().height);
 		}*/
 	}
-
 
 }
 
@@ -67,9 +66,18 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 		if (windowEvent.key.code == sf::Keyboard::Escape) {
 			m_game->SetState(States::MainMenu);
 		}
-		if (windowEvent.key.code == sf::Keyboard::A) {
-			auto translated_pos = m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow()));
-			systems.system<AISystem>().get()->tempClickTest(translated_pos);
+		if (windowEvent.key.code == sf::Keyboard::Q) {
+			if (!systems.system<PickingSystem>().get()->getIsBlueprintActive())
+			{
+				auto ent = entities.create();
+				auto spriteComp = ent.assign<sf::Sprite>().get();
+				spriteComp->setPosition(m_game->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*m_game->getWindow())));
+				spriteComp->setTexture(TextureHandler::getInstance().getTexture("../Resources/house.png"));
+				spriteComp->setColor(sf::Color::Blue);
+				spriteComp->setScale(0.25f, 0.25f);
+				ent.assign<FollowMouseComponent>();
+				systems.system<PickingSystem>().get()->setIsBlueprintActive(true);
+			}
 		}
 		if (windowEvent.key.code == sf::Keyboard::D) {
 			// get the current mouse position in the window
@@ -259,6 +267,7 @@ void GameState::initializeEntities() {
 			spriteComp->setScale(3, 3);
 			ent.assign<AIComponent>();
 			ent.assign<CollisionComponent>();
+			ent.assign<SelectableComponent>();
 		}
 
 	}

@@ -135,9 +135,17 @@ void AISystem::update(entityx::EntityManager& es, entityx::EventManager& events,
 			break;
 		}
 
+	});
 
 
-		});
+	// Update all things that are supposed to follow the cursor
+	sf::Vector2i selectedNode = Astar.getClosestNodeFromPos(m_window->mapPixelToCoords(sf::Mouse::getPosition(*m_window)));
+	sf::Vector2f pos = Astar.getNodeRelativeDistance();
+
+	es.each<FollowMouseComponent, sf::Sprite>([&](entityx::Entity entity, const FollowMouseComponent& followComp, sf::Sprite& sprite) {
+		sprite.setPosition(selectedNode.x * pos.x, selectedNode.y * pos.y);
+	});
+
 
 	// Camera movement
 	m_entitymanager->each<MapComponent>([&](entityx::Entity entity, MapComponent mapComp) {

@@ -45,6 +45,10 @@ struct MapComponent
 	float moveSpeed = 700.0f;
 };
 
+struct FollowMouseComponent
+{
+};
+
 class AStarPathfinding
 {
 public:
@@ -192,6 +196,11 @@ public:
 				shape->setFillColor(sf::Color::Green);
 			}
 		}
+	};
+
+	// Used to get the distance between nodes.
+	sf::Vector2f getNodeRelativeDistance() { 
+		return sf::Vector2f(mapWidth / nManWidth, mapHeight / nManHeight);
 	};
 
 	sf::Vector2i getClosestNodeFromPos(sf::Vector2f INpos) {
@@ -348,10 +357,13 @@ public:
 	void tempClickTest(const sf::Vector2f& mousePos);
 	// used to debug A*, visualize each node
 	void DrawNodes();
+
+
 private:
 	sf::RenderWindow* m_window;
 	entityx::EntityManager* m_entitymanager;
 	entityx::EventManager* m_eventmanager;
 
 	AStarPathfinding Astar;
+
 };

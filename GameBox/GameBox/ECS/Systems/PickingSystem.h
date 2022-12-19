@@ -9,6 +9,9 @@ struct SelectedComponent
 
 };
 
+struct SelectableComponent
+{};
+
 class PickingSystem : public entityx::System<PickingSystem>
 {
 public:
@@ -31,8 +34,13 @@ public:
 	void selectEntitiesInArea(entityx::EntityManager& es, entityx::EventManager& events, const sf::FloatRect& rect, bool shiftclick);
 
 	void clickRight(entityx::EntityManager& es, entityx::EventManager& events, const sf::Vector2f& mousePos);
+
+	bool const getIsBlueprintActive();
+	void setIsBlueprintActive(bool flag);
+
 private:
 
 	entityx::Entity target;
 
+	bool m_isBlueprintActive = false;
 };

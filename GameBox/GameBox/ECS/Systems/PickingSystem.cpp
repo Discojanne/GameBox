@@ -2,6 +2,7 @@
 #include "SFML/Graphics/Sprite.hpp"
 #include "../../events/ClickActionEvent.h"
 #include "AISystem.h"
+#include "CollisionSystem.h"
 
 PickingSystem::PickingSystem() {
 }
@@ -22,18 +23,31 @@ void PickingSystem::clickLeft(entityx::EntityManager& es, entityx::EventManager&
 			});
 	}
 
-	// Iterate over all entities with a Sprite component.
-	es.each<sf::Sprite>([&](entityx::Entity entity, sf::Sprite& sprite) {
-		// If the sprite's bounds intersect with the selection rect and the entity is not a map entity,
+	// Iterate over all entities with a "Selectablecomponent"
+	es.each<SelectableComponent, sf::Sprite>([&](entityx::Entity entity, SelectableComponent& selectedComp, sf::Sprite& sprite) {
+		// If the sprite's bounds intersect with the selection rect,
 		// select the entity.
-		if (sprite.getGlobalBounds().contains(mousePos) && !entity.has_component<MapComponent>()) {
+		if (sprite.getGlobalBounds().contains(mousePos)) {
 			if (!entity.has_component<SelectedComponent>()) {
 				entity.assign<SelectedComponent>();
 				sprite.setColor(sf::Color::Blue);
 			}
 		}
 
-		});
+	});
+
+	// Place the blueprint object
+	es.each<FollowMouseComponent, sf::Sprite>([&](entityx::Entity entity, FollowMouseComponent& selectedComp, sf::Sprite& sprite) {
+
+		entity.remove<FollowMouseComponent>();
+		if (!entity.has_component<CollisionComponent>())
+		{
+			entity.assign<CollisionComponent>();
+		}
+		sprite.setColor(sf::Color::White);
+		
+	});
+	m_isBlueprintActive = false;
 }
 
 void PickingSystem::selectEntitiesInArea(entityx::EntityManager& es, entityx::EventManager& events, const sf::FloatRect& rect, bool shiftclick) {
@@ -46,11 +60,11 @@ void PickingSystem::selectEntitiesInArea(entityx::EntityManager& es, entityx::Ev
 	}
 
 	// Iterate over all entities with a Sprite component.
-	es.each<sf::Sprite>([&](entityx::Entity entity, sf::Sprite& sprite) {
+	es.each<SelectableComponent, sf::Sprite>([&](entityx::Entity entity, SelectableComponent& selectedComp, sf::Sprite& sprite) {
 		// If the sprite's bounds intersect with the selection rect and the entity is not a map entity,
 		// select the entity.
-		if (rect.intersects(sprite.getGlobalBounds()) && !entity.has_component<MapComponent>()) {
-			if (!entity.has_component<SelectedComponent>() && !entity.has_component<MapComponent>()) {
+		if (rect.intersects(sprite.getGlobalBounds())) {
+			if (!entity.has_component<SelectedComponent>()) {
 				entity.assign<SelectedComponent>();
 				sprite.setColor(sf::Color::Blue);
 			}
@@ -74,9 +88,25 @@ void PickingSystem::clickRight(entityx::EntityManager& es, entityx::EventManager
 	//	}
 
 	//	});
+
+	es.each<FollowMouseComponent, sf::Sprite>([&](entityx::Entity entity, FollowMouseComponent& selectedComp, sf::Sprite& sprite) {
+		entity.destroy();
+		m_isBlueprintActive = false;
+	});
+
 	ClickActionEvent data;
 	data.mousePos = mousePos;
 
 	events.emit<ClickActionEvent>(data);
 
+}
+
+bool const PickingSystem::getIsBlueprintActive()
+{
+	return m_isBlueprintActive;
+}
+
+void PickingSystem::setIsBlueprintActive(bool flag)
+{
+	m_isBlueprintActive = flag;
 }
