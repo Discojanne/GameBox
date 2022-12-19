@@ -23,7 +23,7 @@ void PickingSystem::clickLeft(entityx::EntityManager& es, entityx::EventManager&
 			});
 	}
 
-	// Iterate over all entities with a Sprite component.
+	// Iterate over all entities with a "Selectablecomponent"
 	es.each<SelectableComponent, sf::Sprite>([&](entityx::Entity entity, SelectableComponent& selectedComp, sf::Sprite& sprite) {
 		// If the sprite's bounds intersect with the selection rect,
 		// select the entity.
@@ -36,13 +36,18 @@ void PickingSystem::clickLeft(entityx::EntityManager& es, entityx::EventManager&
 
 	});
 
+	// Place the blueprint object
 	es.each<FollowMouseComponent, sf::Sprite>([&](entityx::Entity entity, FollowMouseComponent& selectedComp, sf::Sprite& sprite) {
-		
+
 		entity.remove<FollowMouseComponent>();
-		entity.assign<CollisionComponent>();
+		if (!entity.has_component<CollisionComponent>())
+		{
+			entity.assign<CollisionComponent>();
+		}
 		sprite.setColor(sf::Color::White);
-		m_isBlueprintActive = false;
+		
 	});
+	m_isBlueprintActive = false;
 }
 
 void PickingSystem::selectEntitiesInArea(entityx::EntityManager& es, entityx::EventManager& events, const sf::FloatRect& rect, bool shiftclick) {
