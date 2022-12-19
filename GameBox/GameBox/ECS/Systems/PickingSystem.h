@@ -15,7 +15,7 @@ struct SelectableComponent
 class PickingSystem : public entityx::System<PickingSystem>
 {
 public:
-	PickingSystem();
+	PickingSystem(entityx::SystemManager& sm);
 	~PickingSystem();
 
 	void update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt) override;
@@ -37,5 +37,5 @@ public:
 private:
 
 	entityx::Entity target;
-
+	entityx::SystemManager* m_systemmanager;
 };

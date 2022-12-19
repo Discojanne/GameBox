@@ -3,9 +3,6 @@
 #include "SFML/Graphics.hpp"
 #include "../../Game.h"
 
-struct FollowMouseComponent
-{
-};
 
 class SpriteRenderSystem : public entityx::System<SpriteRenderSystem> {
 public:
@@ -23,11 +20,8 @@ public:
 	*/
 	void setRenderSelectionRectangle(const bool renderSelectionRect);
 
-	bool const getIsBlueprintActive();
-	void setIsBlueprintActive(bool flag);
 private:
 	Game* m_pGame;
 	sf::FloatRect m_selectionRect;
 	bool m_renderSelectionRect = false;
-	bool m_isBlueprintActive = false;
 };
