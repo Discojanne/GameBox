@@ -4,7 +4,7 @@
 #include "AISystem.h"
 #include "CollisionSystem.h"
 
-PickingSystem::PickingSystem(entityx::SystemManager& sm) : m_systemmanager(&sm) {
+PickingSystem::PickingSystem() {
 }
 
 PickingSystem::~PickingSystem() {
@@ -41,7 +41,7 @@ void PickingSystem::clickLeft(entityx::EntityManager& es, entityx::EventManager&
 		entity.remove<FollowMouseComponent>();
 		entity.assign<CollisionComponent>();
 		sprite.setColor(sf::Color::White);
-		m_systemmanager->system<AISystem>().get()->setIsBlueprintActive(false);
+		m_isBlueprintActive = false;
 	});
 }
 
@@ -86,7 +86,7 @@ void PickingSystem::clickRight(entityx::EntityManager& es, entityx::EventManager
 
 	es.each<FollowMouseComponent, sf::Sprite>([&](entityx::Entity entity, FollowMouseComponent& selectedComp, sf::Sprite& sprite) {
 		entity.destroy();
-		m_systemmanager->system<AISystem>().get()->setIsBlueprintActive(false);
+		m_isBlueprintActive = false;
 	});
 
 	ClickActionEvent data;
@@ -94,4 +94,14 @@ void PickingSystem::clickRight(entityx::EntityManager& es, entityx::EventManager
 
 	events.emit<ClickActionEvent>(data);
 
+}
+
+bool const PickingSystem::getIsBlueprintActive()
+{
+	return m_isBlueprintActive;
+}
+
+void PickingSystem::setIsBlueprintActive(bool flag)
+{
+	m_isBlueprintActive = flag;
 }

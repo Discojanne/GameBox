@@ -15,7 +15,7 @@ struct SelectableComponent
 class PickingSystem : public entityx::System<PickingSystem>
 {
 public:
-	PickingSystem(entityx::SystemManager& sm);
+	PickingSystem();
 	~PickingSystem();
 
 	void update(entityx::EntityManager& es, entityx::EventManager& events, entityx::TimeDelta dt) override;
@@ -34,8 +34,13 @@ public:
 	void selectEntitiesInArea(entityx::EntityManager& es, entityx::EventManager& events, const sf::FloatRect& rect, bool shiftclick);
 
 	void clickRight(entityx::EntityManager& es, entityx::EventManager& events, const sf::Vector2f& mousePos);
+
+	bool const getIsBlueprintActive();
+	void setIsBlueprintActive(bool flag);
+
 private:
 
 	entityx::Entity target;
-	entityx::SystemManager* m_systemmanager;
+
+	bool m_isBlueprintActive = false;
 };

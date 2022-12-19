@@ -358,8 +358,6 @@ public:
 	// used to debug A*, visualize each node
 	void DrawNodes();
 
-	bool const getIsBlueprintActive();
-	void setIsBlueprintActive(bool flag);
 
 private:
 	sf::RenderWindow* m_window;
@@ -368,5 +366,4 @@ private:
 
 	AStarPathfinding Astar;
 
-	bool m_isBlueprintActive = false;
 };

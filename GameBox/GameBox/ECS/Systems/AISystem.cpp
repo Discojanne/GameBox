@@ -251,13 +251,3 @@ void AISystem::DrawNodes()
 		Astar.DrawNodes();
 	}
 }
-
-bool const AISystem::getIsBlueprintActive()
-{
-	return m_isBlueprintActive;
-}
-
-void AISystem::setIsBlueprintActive(bool flag)
-{
-	m_isBlueprintActive = flag;
-}

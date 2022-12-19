@@ -67,7 +67,7 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 			m_game->SetState(States::MainMenu);
 		}
 		if (windowEvent.key.code == sf::Keyboard::Q) {
-			if (!systems.system<AISystem>().get()->getIsBlueprintActive())
+			if (!systems.system<PickingSystem>().get()->getIsBlueprintActive())
 			{
 				auto ent = entities.create();
 				auto spriteComp = ent.assign<sf::Sprite>().get();
@@ -76,7 +76,7 @@ void GameState::handleWindowEvent(const sf::Event& windowEvent) {
 				spriteComp->setColor(sf::Color::Blue);
 				spriteComp->setScale(0.25f, 0.25f);
 				ent.assign<FollowMouseComponent>();
-				systems.system<AISystem>().get()->setIsBlueprintActive(true);
+				systems.system<PickingSystem>().get()->setIsBlueprintActive(true);
 			}
 		}
 		if (windowEvent.key.code == sf::Keyboard::D) {
@@ -225,7 +225,7 @@ void GameState::initializeSystems() {
 	systems.add<AISystem>(m_game->getWindow(), events, entities, sf::Vector2i(mapComp->width, mapComp->height));
 
 	systems.add<TextSystem>(m_game->getWindow(), events);
-	systems.add<PickingSystem>(systems);
+	systems.add<PickingSystem>();
 	systems.add<CollisionSystem>();
 
 	auto animationSystem = systems.add<AnimationSystem>();
