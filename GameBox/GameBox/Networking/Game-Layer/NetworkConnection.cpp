@@ -1,0 +1,148 @@
+#include "NetworkConnection.h"
+#include "../../events/Networking/NetworkEvents.h"
+#include <iostream>
+
+NetworkConnection::NetworkConnection() {
+
+}
+
+NetworkConnection::~NetworkConnection() {
+}
+
+bool NetworkConnection::Initialize(entityx::EventManager* pEventManager) {
+	m_pEventManager = pEventManager;
+	return m_networkModule.initialize();
+}
+
+void NetworkConnection::CheckNetworkEvents() {
+	m_networkModule.checkForPackages(*this);	//Will call handleNetworkEvents(NetworkEvent nEvents) for each network event not yet handled.
+}
+
+bool NetworkConnection::Host() {
+	bool b = m_networkModule.host(1234);
+	if (b) {
+		Player player;
+		player.clientID = 0;
+		player.playerID = 0;
+		player.playerName = "Me (Host)" + std::to_string(player.clientID);
+
+		m_players.push_back(player);
+	}
+	return b;
+}
+
+bool NetworkConnection::Join() {
+	bool b = m_networkModule.join("127.0.0.1", 1234);
+	return b;
+}
+
+void NetworkConnection::handleNetworkEvents(NetworkEvent nEvents) {
+
+	switch (nEvents.eventType) {
+	case NETWORK_EVENT_TYPE::NETWORK_ERROR:
+	{
+		break;
+	}
+	case NETWORK_EVENT_TYPE::CONNECTION_ESTABLISHED:
+	{
+		if (m_networkModule.isServer()) {
+			m_pending_connection.push_back(nEvents.clientID);
+			//Send connected players
+			char id = 0;
+			for (auto& i : m_players) {
+				NETWORK_GAMELAYER_EVENT playerJoined = {};
+				playerJoined.type = NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_JOINED;
+
+				memcpy_s(playerJoined.event_data.player_joined.name, MAX_PLAYER_NAME_LENGTH, i.playerName.c_str(), i.playerName.size());
+				playerJoined.event_data.player_joined.playerID = id++;
+
+				m_networkModule.send(reinterpret_cast<char*>(&playerJoined), sizeof(NETWORK_GAMELAYER_EVENT), nEvents.clientID);
+			}
+		} else {
+			NETWORK_GAMELAYER_EVENT playerJoined = {};
+			playerJoined.type = NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_JOINED;
+
+			memcpy_s(playerJoined.event_data.player_joined.name, MAX_PLAYER_NAME_LENGTH, "Client", 6);
+			playerJoined.event_data.player_joined.playerID = 0;
+
+			m_networkModule.send(reinterpret_cast<char*>(&playerJoined), sizeof(NETWORK_GAMELAYER_EVENT));
+		}
+		break;
+	}
+	case NETWORK_EVENT_TYPE::CONNECTION_CLOSED:
+	{
+		//TODO: exit
+		break;
+	}
+	case NETWORK_EVENT_TYPE::CONNECTION_RE_ESTABLISHED:
+	{
+		//TODO: anything?
+		break;
+	}
+	case NETWORK_EVENT_TYPE::DATA_RECEIVED:
+	{
+		NETWORK_GAMELAYER_EVENT* recievedData = reinterpret_cast<NETWORK_GAMELAYER_EVENT*>(nEvents.data->rawMsg);
+
+		switch (recievedData->type) {
+		case NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_JOINED:
+		{
+			Player player = {};
+			player.playerName = recievedData->event_data.player_joined.name;
+
+			if (m_networkModule.isServer()) {
+				//Complete the Player Info
+				player.clientID = nEvents.clientID;
+				player.playerID = m_players.size();
+
+				//Inform all clients that a new player joined.
+				NETWORK_GAMELAYER_EVENT playerJoined = {};
+				playerJoined.type = NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_JOINED;
+
+				memcpy_s(playerJoined.event_data.player_joined.name, MAX_PLAYER_NAME_LENGTH, player.playerName.c_str(), player.playerName.size());
+				playerJoined.event_data.player_joined.playerID = player.playerID;
+
+				m_networkModule.send(reinterpret_cast<char*>(&playerJoined), sizeof(NETWORK_GAMELAYER_EVENT), -1);
+			} else {
+				player.clientID = 0;
+				player.playerID = recievedData->event_data.player_joined.playerID;
+			}
+
+			m_players.push_back(player);
+		}
+		break;
+		case NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_LEFT:
+			break;
+		case NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_CHANGED_NAME:
+			if (m_networkModule.isServer()) {
+				for (auto& i : m_pending_connection) {
+					if (i == nEvents.clientID) {
+						break;
+					}
+				}
+			} else {
+
+			}
+			break;
+		case NETWORK_GAMELAYER_EVENT_TYPE::CHAT_MESSAGE_RECEIVED:
+			break;
+		case NETWORK_GAMELAYER_EVENT_TYPE::REQUEST_STATE_CHANGE:
+			break;
+		case NETWORK_GAMELAYER_EVENT_TYPE::GAME_DATA_MESSAGE:
+			break;
+		case NETWORK_GAMELAYER_EVENT_TYPE::UNDEFINED:
+		default:
+			//Error
+			break;
+		}
+
+		break;
+	}
+	case NETWORK_EVENT_TYPE::HOST_ON_LAN_FOUND:
+	{
+		//TODO: move to general
+		break;
+	}
+	default:
+		break;
+	}
+}

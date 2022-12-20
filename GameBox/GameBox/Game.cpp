@@ -2,10 +2,13 @@
 #include <SFML\Graphics.hpp>
 #include "state/GameState.h"
 #include "state/MainMenuState.h"
+#include "state/Lobby/LobbyState.h"
 
 Game::Game() : m_window(sf::VideoMode(1600, 800), "Gamebox setup test") {
 	m_font.loadFromFile("../Resources/Arcon-Regular.otf");
 	m_currentState = new MainMenuState(this);
+
+	m_networkConnection.Initialize(&m_eventManager);
 }
 
 Game::~Game() {
@@ -23,6 +26,8 @@ void Game::handleWindowEvent(const sf::Event& event) {
 
 void Game::update() {
 	float dt = m_gameTime.restart().asSeconds();
+
+	m_networkConnection.CheckNetworkEvents();
 
 	ApplyNextState();
 	m_currentState->processInput(dt);
@@ -45,6 +50,9 @@ void Game::SetState(States::ID id) {
 		break;
 	case States::Game:
 		m_nextState = new GameState(this);
+		break;
+	case States::Lobby:
+		m_nextState = new LobbyState(this);
 		break;
 	default:
 		break;

@@ -15,6 +15,30 @@ MainMenuState::MainMenuState(Game* pGame) : State(States::MainMenu, pGame) {
 	m_buttons.back().setPosition(posX, posY);
 	posY += 50;
 
+	m_buttons.push_back(Button("Host (Test)", pGame->GetFont(), [&]() {
+		if (m_game->m_networkConnection.Host()) {
+			printf("Host - OK\n");
+			m_game->SetState(States::Lobby);
+		} else {
+			printf("Host - FAIL\n");
+		}
+
+		}));
+	m_buttons.back().setPosition(posX, posY);
+	posY += 50;
+
+	m_buttons.push_back(Button("Join (Test)", pGame->GetFont(), [&]() {
+		if (m_game->m_networkConnection.Join()) {
+			printf("Join - OK\n");
+			m_game->SetState(States::Lobby);
+		} else {
+			printf("Join - FAIL\n");
+		}
+
+		}));
+	m_buttons.back().setPosition(posX, posY);
+	posY += 50;
+
 	m_buttons.push_back(Button("Settings (not implemented)", pGame->GetFont(), [&]() {printf("MainMenu: \"Settings\" Button Pressed!\n"); }));
 	m_buttons.back().setPosition(posX, posY);
 	posY += 50;

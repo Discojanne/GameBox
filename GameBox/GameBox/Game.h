@@ -1,6 +1,8 @@
 #pragma once
 
 #include "state/State.h"
+#include "Networking/Game-Layer/NetworkConnection.h"
+#include "entityx/Event.h"
 
 class Game {
 public:
@@ -13,6 +15,8 @@ public:
 
 	sf::RenderWindow* getWindow();
 	sf::Font& GetFont();
+
+	NetworkConnection m_networkConnection;
 private:
 	void ApplyNextState();
 	sf::RenderWindow m_window;
@@ -22,4 +26,6 @@ private:
 
 	State* m_currentState = nullptr;
 	State* m_nextState = nullptr;
+
+	entityx::EventManager m_eventManager;
 };
