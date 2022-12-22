@@ -1,5 +1,6 @@
 #pragma once
 #include "../State.h"
+#include "../../Chat.h"
 
 class LobbyState  final : public State {
 public:
@@ -10,6 +11,8 @@ public:
 	virtual void handleWindowEvent(const sf::Event& windowEvent) override;
 	virtual void processInput(float dt) override;
 	virtual void update(float dt) override;
+	virtual void renderGUI(float dt) override;
+
 private:
 };
 

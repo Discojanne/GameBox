@@ -3,6 +3,7 @@
 #include "state/State.h"
 #include "Networking/Game-Layer/NetworkConnection.h"
 #include "entityx/Event.h"
+#include "Chat.h"
 
 class Game {
 public:
@@ -17,6 +18,7 @@ public:
 	sf::Font& GetFont();
 
 	NetworkConnection m_networkConnection;
+	Chat m_chat;
 private:
 	void ApplyNextState();
 	sf::RenderWindow m_window;

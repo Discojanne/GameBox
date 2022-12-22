@@ -39,3 +39,11 @@ void LobbyState::update(float dt) {
 		posY += 50;
 	}
 }
+
+void LobbyState::renderGUI(float dt) {
+	//ImGui::ShowDemoWindow();
+	sf::Vector2u windowSize = m_game->getWindow()->getSize();
+	sf::Vector2u chatSize = sf::Vector2u(200, 200);
+
+	m_game->m_chat.Draw(0, windowSize.y - chatSize.y, chatSize.x, chatSize.y);
+}

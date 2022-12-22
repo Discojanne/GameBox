@@ -1,6 +1,8 @@
 #pragma once
 #include "TCP-Layer/Network-Module/NetworkModule.hpp"
 #include "entityx/Event.h"
+#include "../events/ChatMessageEvent.h"
+
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -60,7 +62,7 @@ struct NETWORK_GAMELAYER_EVENT {
 	} event_data;
 };
 
-class NetworkConnection : public NetworkEventHandler {
+class NetworkConnection : public NetworkEventHandler, public entityx::Receiver<NetworkConnection> {
 public:
 
 	NetworkConnection();
@@ -73,6 +75,8 @@ public:
 	bool Join();
 
 	std::vector<Player> m_players;
+
+	void receive(const ChatMessageSentEvent& event);
 
 protected:
 	std::vector<TCP_CONNECTION_ID> m_pending_connection; //Players that just joined (active TCP connection) but have not been accepted by the game.

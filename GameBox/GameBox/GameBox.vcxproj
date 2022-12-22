@@ -166,6 +166,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Chat.cpp" />
     <ClCompile Include="ECS\Systems\AISystem.cpp" />
     <ClCompile Include="ECS\Systems\BallSystem.cpp" />
     <ClCompile Include="ECS\Systems\CollisionSystem.cpp" />
@@ -198,6 +199,7 @@
     <ClCompile Include="thirdparty\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Chat.h" />
     <ClInclude Include="ECS\Systems.h" />
     <ClInclude Include="ECS\Systems\AISystem.h" />
     <ClInclude Include="ECS\Systems\BallSystem.h" />
@@ -208,6 +210,7 @@
     <ClInclude Include="ECS\Systems\SpriteAnimationSystem.h" />
     <ClInclude Include="ECS\Systems\SpriteRenderSystem.h" />
     <ClInclude Include="ECS\Systems\TextSystem.h" />
+    <ClInclude Include="events\ChatMessageEvent.h" />
     <ClInclude Include="events\ClickActionEvent.h" />
     <ClInclude Include="events\Networking\NetworkEvents.h" />
     <ClInclude Include="events\ScoreEvent.h" />

@@ -11,6 +11,7 @@ Game::Game() : m_window(sf::VideoMode(1600, 800), "Gamebox setup test") {
 	m_font.loadFromFile("../Resources/Arcon-Regular.otf");
 	m_currentState = new MainMenuState(this);
 	m_networkConnection.Initialize(&m_eventManager);
+	m_chat.Initialize(&m_eventManager);
 	// Set up ImGui
 	ImGui::SFML::Init(m_window);
 }

@@ -147,5 +147,4 @@ size_t MainMenuState::getHoveredButtonID() {
 }
 
 void MainMenuState::renderGUI(float dt) {
-	ImGui::ShowDemoWindow();
 }

@@ -7,10 +7,15 @@ NetworkConnection::NetworkConnection() {
 }
 
 NetworkConnection::~NetworkConnection() {
+	if (m_pEventManager) {
+		m_pEventManager->unsubscribe<ChatMessageSentEvent>(*this);
+	}
 }
 
 bool NetworkConnection::Initialize(entityx::EventManager* pEventManager) {
 	m_pEventManager = pEventManager;
+	m_pEventManager->subscribe<ChatMessageSentEvent>(*this);
+
 	return m_networkModule.initialize();
 }
 
@@ -34,6 +39,27 @@ bool NetworkConnection::Host() {
 bool NetworkConnection::Join() {
 	bool b = m_networkModule.join("127.0.0.1", 1234);
 	return b;
+}
+
+void NetworkConnection::receive(const ChatMessageSentEvent& event) {
+	NETWORK_GAMELAYER_EVENT networkEvent = {};
+	networkEvent.type = NETWORK_GAMELAYER_EVENT_TYPE::CHAT_MESSAGE_RECEIVED;
+	int len = std::strlen(event.message);
+	if (len >= MAX_CHAT_MESSAGE_LENGTH) {
+		len = MAX_CHAT_MESSAGE_LENGTH - 1;
+	}
+	memcpy_s(networkEvent.event_data.chat_message_received.message, len, event.message, len);
+	networkEvent.event_data.chat_message_received.senderID = 0;
+
+	if (m_networkModule.isServer()) {
+		m_networkModule.send(reinterpret_cast<char*>(&networkEvent), sizeof(networkEvent), -1);
+
+		ChatMessageReceivedEvent chatMessage;
+		chatMessage.message = networkEvent.event_data.chat_message_received.message;
+		m_pEventManager->emit(chatMessage);
+	} else {
+		m_networkModule.send(reinterpret_cast<char*>(&networkEvent), sizeof(networkEvent));
+	}
 }
 
 void NetworkConnection::handleNetworkEvents(NetworkEvent nEvents) {
@@ -124,7 +150,16 @@ void NetworkConnection::handleNetworkEvents(NetworkEvent nEvents) {
 			}
 			break;
 		case NETWORK_GAMELAYER_EVENT_TYPE::CHAT_MESSAGE_RECEIVED:
-			break;
+		{
+			if (m_networkModule.isServer()) {
+				m_networkModule.send(reinterpret_cast<char*>(nEvents.data), sizeof(nEvents.data), -1);
+			}
+
+			ChatMessageReceivedEvent chatMessage;
+			chatMessage.message = recievedData->event_data.chat_message_received.message;
+			m_pEventManager->emit(chatMessage);
+		}
+		break;
 		case NETWORK_GAMELAYER_EVENT_TYPE::REQUEST_STATE_CHANGE:
 			break;
 		case NETWORK_GAMELAYER_EVENT_TYPE::GAME_DATA_MESSAGE:
