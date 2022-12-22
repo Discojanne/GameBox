@@ -3,8 +3,8 @@
 #include "state/GameState.h"
 #include "state/MainMenuState.h"
 
-#include "thirdparty/imgui/imgui.h"
-#include "thirdparty/imgui/imgui-SFML.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui-SFML.h"
 
 Game::Game() : m_window(sf::VideoMode(1600, 800), "Gamebox setup test") {
 	m_font.loadFromFile("../Resources/Arcon-Regular.otf");
@@ -31,25 +31,16 @@ void Game::handleWindowEvent(const sf::Event& event) {
 
 void Game::update() {
 	sf::Time dt_time = m_gameTime.restart();
-
+	float dt_seconds = dt_time.asSeconds();
 	// Update ImGui
 	ImGui::SFML::Update(m_window, dt_time);
 
 	ApplyNextState();
-	m_currentState->processInput(dt_time.asSeconds());
+	m_currentState->processInput(dt_seconds);
 
 	m_window.clear();
-	m_currentState->update(dt_time.asSeconds());
-
-	//Todo: Remove IMGUI BELOW here. This is just a showcase how to use it.
-	ImGui::Begin("SFML-IMGUI Example");
-	ImGui::Text("This is a simple example of using SFML with ImGui.");
-	if (ImGui::Button("Close"))
-		m_window.close();
-	ImGui::End();
-
-	ImGui::ShowDemoWindow();
-	//Todo: Remove IMGUI ABOVE here. This is just a showcase how to use it.
+	m_currentState->update(dt_seconds); //update and render the state 
+	m_currentState->renderGUI(dt_seconds); //render the GUI
 
 	ImGui::SFML::Render(m_window);
 
