@@ -72,6 +72,9 @@
     <ClCompile Include="Networking\Game-Layer\NetworkConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="state\Common UI\Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="state\GameState.h">
@@ -138,6 +141,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\Networking\NetworkEvents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="state\Common UI\Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

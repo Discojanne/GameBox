@@ -176,6 +176,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Networking\Game-Layer\NetworkConnection.cpp" />
     <ClCompile Include="Networking\Game-Layer\TCP-Layer\Network-Module\NetworkModule.cpp" />
+    <ClCompile Include="state\Common UI\Button.cpp" />
     <ClCompile Include="state\Lobby\LobbyState.cpp" />
     <ClCompile Include="state\GameState.cpp" />
     <ClCompile Include="main.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="Networking\Game-Layer\NetworkConnection.h" />
     <ClInclude Include="Networking\Game-Layer\TCP-Layer\Network-Module\NetworkModule.hpp" />
     <ClInclude Include="Networking\Game-Layer\TCP-Layer\Network-Module\NetworkStructs.hpp" />
+    <ClInclude Include="state\Common UI\Button.h" />
     <ClInclude Include="state\Lobby\LobbyState.h" />
     <ClInclude Include="state\GameState.h" />
     <ClInclude Include="state\MainMenuState.h" />
