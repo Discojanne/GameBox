@@ -19,6 +19,6 @@ private:
 	//Chat
 	char                  m_inputBuf[256];
 	std::vector<char*>    m_items;
-	bool                  m_autoScroll;
-	bool                  m_scrollToBottom;
+	bool                  m_autoScroll = true;
+	bool                  m_scrollToBottom = false;
 };
