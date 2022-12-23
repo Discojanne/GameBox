@@ -85,5 +85,6 @@ protected:
 
 
 	// Inherited via NetworkEventHandler
-	virtual void handleNetworkEvents(NetworkEvent nEvents) override;
+	virtual void handleNetworkEvents(NetworkEvent event) override;
+	virtual void handleGameLayerNetworkEvents(NETWORK_GAMELAYER_EVENT& event, TCP_CONNECTION_ID tcp_connection_id);
 };

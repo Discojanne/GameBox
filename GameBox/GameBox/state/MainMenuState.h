@@ -5,6 +5,7 @@
 #include "State.h"
 #include <functional>
 #include "Common UI/Button.h"
+#include <filesystem>
 
 class MainMenuState final : public State {
 public:
@@ -16,6 +17,11 @@ public:
 	virtual void handleWindowEvent(const sf::Event& windowEvent) override;
 	virtual void renderGUI(float dt) override;
 private:
+	void joinServer(std::string ip, unsigned int port = 0);
+	void saveIPs();
+	void loadIPs();
+	void addServerToList(std::string serverAddress);
+	void renderServerList();
 	/*
 		Returns the ID of the button currently being hovered over by the mouse, or -1 if no button is being hovered over
 	*/
@@ -26,4 +32,11 @@ private:
 
 	sf::Texture m_logoTexture;
 	sf::Sprite m_logoSprite;
+
+	//ServerList
+	bool m_bIsServerListOpen = false;
+	std::string m_joinErrorMessage = "";
+	std::vector<std::string> m_savedIPs;
+	int m_selectedServer = -1;
+	const std::filesystem::path m_serverListPath = "config/serverlist.txt";
 };

@@ -62,9 +62,9 @@ void NetworkConnection::receive(const ChatMessageSentEvent& event) {
 	}
 }
 
-void NetworkConnection::handleNetworkEvents(NetworkEvent nEvents) {
+void NetworkConnection::handleNetworkEvents(NetworkEvent event) {
 
-	switch (nEvents.eventType) {
+	switch (event.eventType) {
 	case NETWORK_EVENT_TYPE::NETWORK_ERROR:
 	{
 		break;
@@ -72,7 +72,7 @@ void NetworkConnection::handleNetworkEvents(NetworkEvent nEvents) {
 	case NETWORK_EVENT_TYPE::CONNECTION_ESTABLISHED:
 	{
 		if (m_networkModule.isServer()) {
-			m_pending_connection.push_back(nEvents.clientID);
+			m_pending_connection.push_back(event.clientID);
 			//Send connected players
 			char id = 0;
 			for (auto& i : m_players) {
@@ -82,7 +82,7 @@ void NetworkConnection::handleNetworkEvents(NetworkEvent nEvents) {
 				memcpy_s(playerJoined.event_data.player_joined.name, MAX_PLAYER_NAME_LENGTH, i.playerName.c_str(), i.playerName.size());
 				playerJoined.event_data.player_joined.playerID = id++;
 
-				m_networkModule.send(reinterpret_cast<char*>(&playerJoined), sizeof(NETWORK_GAMELAYER_EVENT), nEvents.clientID);
+				m_networkModule.send(reinterpret_cast<char*>(&playerJoined), sizeof(NETWORK_GAMELAYER_EVENT), event.clientID);
 			}
 		} else {
 			NETWORK_GAMELAYER_EVENT playerJoined = {};
@@ -107,69 +107,8 @@ void NetworkConnection::handleNetworkEvents(NetworkEvent nEvents) {
 	}
 	case NETWORK_EVENT_TYPE::DATA_RECEIVED:
 	{
-		NETWORK_GAMELAYER_EVENT* recievedData = reinterpret_cast<NETWORK_GAMELAYER_EVENT*>(nEvents.data->rawMsg);
-
-		switch (recievedData->type) {
-		case NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_JOINED:
-		{
-			Player player = {};
-			player.playerName = recievedData->event_data.player_joined.name;
-
-			if (m_networkModule.isServer()) {
-				//Complete the Player Info
-				player.clientID = nEvents.clientID;
-				player.playerID = m_players.size();
-
-				//Inform all clients that a new player joined.
-				NETWORK_GAMELAYER_EVENT playerJoined = {};
-				playerJoined.type = NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_JOINED;
-
-				memcpy_s(playerJoined.event_data.player_joined.name, MAX_PLAYER_NAME_LENGTH, player.playerName.c_str(), player.playerName.size());
-				playerJoined.event_data.player_joined.playerID = player.playerID;
-
-				m_networkModule.send(reinterpret_cast<char*>(&playerJoined), sizeof(NETWORK_GAMELAYER_EVENT), -1);
-			} else {
-				player.clientID = 0;
-				player.playerID = recievedData->event_data.player_joined.playerID;
-			}
-
-			m_players.push_back(player);
-		}
-		break;
-		case NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_LEFT:
-			break;
-		case NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_CHANGED_NAME:
-			if (m_networkModule.isServer()) {
-				for (auto& i : m_pending_connection) {
-					if (i == nEvents.clientID) {
-						break;
-					}
-				}
-			} else {
-
-			}
-			break;
-		case NETWORK_GAMELAYER_EVENT_TYPE::CHAT_MESSAGE_RECEIVED:
-		{
-			if (m_networkModule.isServer()) {
-				m_networkModule.send(reinterpret_cast<char*>(nEvents.data), sizeof(nEvents.data), -1);
-			}
-
-			ChatMessageReceivedEvent chatMessage;
-			chatMessage.message = recievedData->event_data.chat_message_received.message;
-			m_pEventManager->emit(chatMessage);
-		}
-		break;
-		case NETWORK_GAMELAYER_EVENT_TYPE::REQUEST_STATE_CHANGE:
-			break;
-		case NETWORK_GAMELAYER_EVENT_TYPE::GAME_DATA_MESSAGE:
-			break;
-		case NETWORK_GAMELAYER_EVENT_TYPE::UNDEFINED:
-		default:
-			//Error
-			break;
-		}
-
+		NETWORK_GAMELAYER_EVENT* recievedData = reinterpret_cast<NETWORK_GAMELAYER_EVENT*>(event.data->rawMsg);
+		handleGameLayerNetworkEvents(*recievedData, event.clientID);
 		break;
 	}
 	case NETWORK_EVENT_TYPE::HOST_ON_LAN_FOUND:
@@ -178,6 +117,70 @@ void NetworkConnection::handleNetworkEvents(NetworkEvent nEvents) {
 		break;
 	}
 	default:
+		break;
+	}
+}
+
+void NetworkConnection::handleGameLayerNetworkEvents(NETWORK_GAMELAYER_EVENT& event, TCP_CONNECTION_ID tcp_connection_id) {
+
+	switch (event.type) {
+	case NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_JOINED:
+	{
+		Player player = {};
+		player.playerName = event.event_data.player_joined.name;
+
+		if (m_networkModule.isServer()) {
+			//Complete the Player Info
+			player.clientID = tcp_connection_id;
+			player.playerID = m_players.size();
+
+			//Inform all clients that a new player joined.
+			NETWORK_GAMELAYER_EVENT playerJoined = {};
+			playerJoined.type = NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_JOINED;
+
+			memcpy_s(playerJoined.event_data.player_joined.name, MAX_PLAYER_NAME_LENGTH, player.playerName.c_str(), player.playerName.size());
+			playerJoined.event_data.player_joined.playerID = player.playerID;
+
+			m_networkModule.send(reinterpret_cast<char*>(&playerJoined), sizeof(NETWORK_GAMELAYER_EVENT), -1);
+		} else {
+			player.clientID = 0;
+			player.playerID = event.event_data.player_joined.playerID;
+		}
+
+		m_players.push_back(player);
+	}
+	break;
+	case NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_LEFT:
+		break;
+	case NETWORK_GAMELAYER_EVENT_TYPE::PLAYER_CHANGED_NAME:
+		if (m_networkModule.isServer()) {
+			for (auto& i : m_pending_connection) {
+				if (i == tcp_connection_id) {
+					break;
+				}
+			}
+		} else {
+
+		}
+		break;
+	case NETWORK_GAMELAYER_EVENT_TYPE::CHAT_MESSAGE_RECEIVED:
+	{
+		if (m_networkModule.isServer()) {
+			m_networkModule.send(reinterpret_cast<char*>(&event), sizeof(event), -1);
+		}
+
+		ChatMessageReceivedEvent chatMessage;
+		chatMessage.message = event.event_data.chat_message_received.message;
+		m_pEventManager->emit(chatMessage);
+	}
+	break;
+	case NETWORK_GAMELAYER_EVENT_TYPE::REQUEST_STATE_CHANGE:
+		break;
+	case NETWORK_GAMELAYER_EVENT_TYPE::GAME_DATA_MESSAGE:
+		break;
+	case NETWORK_GAMELAYER_EVENT_TYPE::UNDEFINED:
+	default:
+		//Error
 		break;
 	}
 }
